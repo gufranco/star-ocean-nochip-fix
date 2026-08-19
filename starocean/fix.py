@@ -37,6 +37,14 @@ DIRECTORY_VARIABLE = "STAR_OCEAN_ROM_DIR"
 
 DEFAULT_SOURCE = ROOT / "roms"
 
+ALONGSIDE = ROOT.parent / "roms"
+"""Where a project carrying this one as a submodule keeps its own cartridges.
+
+Standalone, the directory in this repository is the one that matters. Vendored
+into something larger, the parent owns the library, and neither side should have
+to be told about the other for the same files to be found.
+"""
+
 DEFAULT_DESTINATION = ROOT / "dist"
 
 
@@ -60,7 +68,14 @@ class Missing(Exception):
     pass
 
 
-def source_directory(environment=None):
+def source_directories(environment=None):
+    """Everywhere a cartridge is looked for, nearest intent first."""
+    named = (environment if environment is not None else os.environ).get(DIRECTORY_VARIABLE)
+    places = [Path(named)] if named else []
+    return (*places, DEFAULT_SOURCE, ALONGSIDE)
+
+
+def source_directory(environment=None, places=None):
     """Where the images are read from: what was named, or the folder in here.
 
     A named directory wins even when it turns out to be empty. Quietly falling back
@@ -68,7 +83,12 @@ def source_directory(environment=None):
     and reports that nothing needed doing.
     """
     named = (environment if environment is not None else os.environ).get(DIRECTORY_VARIABLE)
-    return Path(named) if named else DEFAULT_SOURCE
+    if named:
+        return Path(named)
+    for place in places if places is not None else source_directories(environment):
+        if place.is_dir():
+            return place
+    return DEFAULT_SOURCE
 
 
 def digests_of(image):

@@ -44,6 +44,7 @@ from .fix import (
     correct,
     digests_of,
     run,
+    source_directories,
     source_directory,
 )
 from .verify import (
@@ -99,6 +100,7 @@ __all__ = [
     "named",
     "report",
     "run",
+    "source_directories",
     "source_directory",
     "verdict",
 ]

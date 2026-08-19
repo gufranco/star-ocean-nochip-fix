@@ -225,6 +225,26 @@ class SourceDirectoryTest(unittest.TestCase):
     def test_and_the_folder_in_this_repository_is_used_when_none_is(self):
         self.assertEqual(fix.source_directory({}), fix.DEFAULT_SOURCE)
 
+    def test_the_project_this_sits_inside_is_looked_at_too(self):
+        self.assertIn(fix.ALONGSIDE, fix.source_directories({}))
+
+    def test_a_named_directory_comes_before_either_of_them(self):
+        found = fix.source_directories({fix.DIRECTORY_VARIABLE: "/x"})
+
+        self.assertEqual(found[0], Path("/x"))
+
+    def test_the_first_place_that_is_actually_there_is_the_one_used(self):
+        import tempfile
+
+        here = Path(tempfile.mkdtemp())
+
+        self.assertEqual(fix.source_directory({}, places=[Path("/nowhere"), here]), here)
+
+    def test_and_when_no_place_is_there_the_folder_here_is_named(self):
+        chosen = fix.source_directory({}, places=[Path("/nowhere"), Path("/nor/here")])
+
+        self.assertEqual(chosen, fix.DEFAULT_SOURCE)
+
 
 class MainTest(unittest.TestCase):
     def setUp(self):
