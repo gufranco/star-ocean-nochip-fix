@@ -1,8 +1,8 @@
 <div align="center">
 
-<h1>Star Ocean, no chip</h1>
+<h1>Star Ocean, no chip: the header fix</h1>
 
-<strong>Two rebuilds that no longer need their coprocessor, and a header that never stopped claiming one.</strong>
+<strong>neviksti took the S-DD1 out of Star Ocean. The header never noticed.</strong>
 
 <br>
 <br>
@@ -15,6 +15,7 @@
 </div>
 
 <p align="center">
+  <a href="#credit-where-it-belongs">Credit</a> &nbsp;|&nbsp;
   <a href="#quick-start">Quick start</a> &nbsp;|&nbsp;
   <a href="#what-is-wrong">What is wrong</a> &nbsp;|&nbsp;
   <a href="#the-two-editions">The two editions</a> &nbsp;|&nbsp;
@@ -33,13 +34,24 @@ python3 starocean/fix.py roms dist
 
 ---
 
+## Credit where it belongs
+
+The hard part was done by other people, years ago, and none of it is repeated here.
+
+| Who | What |
+|:----|:-----|
+| **neviksti** | Reverse-engineered the S-DD1 and wrote the [Star Ocean no S-DD1/96Mbit hack](https://www.romhacking.net/hacks/614/): decompresses the graphics ahead of time and rebuilds the cartridge at 96 Mbit, so the chip is not needed at all. Two patches, one for the Japanese original and one for the translated build. |
+| **DeJap Translations** | The English translation the second patch is built on. |
+
+This repository changes twelve bytes of a header. That is the entire contribution, and the ratio is worth being clear about.
+
+neviksti's stated purpose is worth repeating because it is exactly why the header matters: the hack is **for real hardware**. Backup units like the Game Doctor SF7, flash carts and custom carts have no S-DD1, so an unmodified Star Ocean will not run on them. A header still advertising a chip that is not fitted is a loose end on work aimed squarely at hardware that reads headers.
+
 ## What is wrong
 
-Star Ocean shipped on an S-DD1 board. The chip decompressed graphics on the way to the console, which is how a 1996 cartridge fit a game that size.
+Star Ocean shipped on an S-DD1 board. The chip decompressed graphics on the way to the console, which is how a 1996 cartridge fit a game that size. After the patch the data is already decompressed and the chip has nothing left to do.
 
-Somebody else did the hard part years ago: decompressed all of it ahead of time and rebuilt the cartridge at ninety six megabit, so the S-DD1 has nothing left to do. Two of those rebuilds exist, one Japanese and one carrying the English translation.
-
-Both still say, in their header, that an S-DD1 is fitted.
+Both rebuilds still say, in their header, that an S-DD1 is fitted.
 
 | Field | Says | Should say |
 |:------|:-----|:-----------|
@@ -51,7 +63,7 @@ The size was wrong before anyone touched the file. The field holds a power of tw
 
 ## The solution
 
-Nothing here reimplements any of it. `snes-mapper` decides where the header sits, `snes-rom-image` rewrites every mirror and recomputes the checksum, and this repository is the part that makes a small unattended change safe: it checks at both ends.
+Nothing here reimplements any of it. [`snes-mapper`](https://github.com/gufranco/snes-mapper-python) decides where the header sits, [`snes-rom-image`](https://github.com/gufranco/snes-rom-image-python) rewrites every mirror and recomputes the checksum, and this repository is the part that makes a small unattended change safe: it checks at both ends.
 
 ```mermaid
 graph LR
@@ -72,7 +84,7 @@ The order is the whole design. An image is confirmed before anything touches it,
 | Tool | Version | Install |
 |:-----|:--------|:--------|
 | Python | >= 3.12 | [python.org](https://www.python.org/downloads/) |
-| git | any | submodules are needed for the packages below |
+| git | any | submodules carry the two packages this is built on |
 
 ### Setup
 
@@ -83,7 +95,7 @@ cd star-ocean-nochip-fix
 
 ### Run
 
-Put copies you already own in [`roms/`](roms/), keeping the filenames in [`roms/README.md`](roms/README.md), then:
+You supply the images. Apply neviksti's patch to a copy of Star Ocean you own, put the result in [`roms/`](roms/) under the filename in [`roms/README.md`](roms/README.md), then:
 
 ```bash
 python3 starocean/fix.py roms dist
@@ -93,10 +105,12 @@ Point `STAR_OCEAN_ROM_DIR` at a library somewhere else to read from there instea
 
 ## The two editions
 
-| Edition | Reads | Writes |
-|:--------|:------|:-------|
-| `japanese` | the Japanese rebuild | `star-ocean-jp-nochip.sfc` |
-| `english` | the same rebuild with the English translation | `star-ocean-en-nochip.sfc` |
+| Edition | Built from | Writes |
+|:--------|:-----------|:-------|
+| `japanese` | neviksti's patch on the Japanese original | `star-ocean-jp-nochip.sfc` |
+| `english` | neviksti's patch on the DeJap translation | `star-ocean-en-nochip.sfc` |
+
+The two patches are not interchangeable, which is why these are two editions rather than one with a flag.
 
 Every filename and all eight digests per edition live in [`roms.manifest.json`](roms.manifest.json) and are printed in [`roms/README.md`](roms/README.md). The table is data rather than code: filenames and digests are the two things most likely to need a correction of their own, and a table nobody has to read Python to check is easier to correct.
 
@@ -106,7 +120,7 @@ A correction whose output is not written down is a script, and a script that rew
 
 So the manifest pins four digests of what goes in and four of what comes out. That buys three things:
 
-- **A wrong input is caught before the rewrite.** A different revision of the rebuild has the right length and the wrong content, and it would otherwise be corrected into something nobody has ever tested.
+- **A wrong input is caught before the rewrite.** A different revision of the patch produces a file of the right length and different content, and it would otherwise be corrected into something nobody has ever tested.
 - **A changed correction is caught after it.** If the input was the one named and the output is not the one promised, something about the correction itself moved, and the run says so instead of writing.
 - **A manifest that contradicts itself is caught either way.** All four digests are confirmed, not just the deciding one. Publishing a crc32 beside a sha256 and never looking at the crc32 is publishing decoration.
 
@@ -121,7 +135,7 @@ Twelve bytes. Six per header mirror, and there are two mirrors, at `0x7FC0` and 
 0x7FC0 + 0x1E   checksum         recomputed
 ```
 
-A test asserts that nothing outside a header mirror moves, so the claim is checked rather than stated.
+A test asserts that nothing outside a header mirror moves, so the claim is checked rather than stated. The game data the patch produced is not touched.
 
 ## Tests
 
@@ -149,6 +163,12 @@ Both are carried as submodules. `snes-mapper` arrives nested inside `snes-rom-im
 
 ## Licence
 
-MIT. See [`LICENSE`](LICENSE).
+MIT, and it covers the code in this repository and nothing else.
 
-Neither image is distributed here and neither is reconstructible from anything in this repository. See [`roms/README.md`](roms/README.md).
+Neither image is distributed here and neither is reconstructible from anything in this repository. Star Ocean belongs to its publisher, the S-DD1 removal is neviksti's work, and the English translation is DeJap's. See [`roms/README.md`](roms/README.md).
+
+## Sources
+
+- [Star Ocean no S-DD1/96Mbit hack](https://www.romhacking.net/hacks/614/), neviksti, on Romhacking.net
+- [S-DD1](https://wiki.superfamicom.org/s-dd1), Super Famicom Development Wiki
+- [SNES: Star Ocean English translation/hack](https://github.com/frederic-mahe/Hardware-Target-Game-Database/issues/622), Hardware Target Game Database

@@ -20,10 +20,14 @@ doing.
 ## What is corrected
 
 Star Ocean shipped on an S-DD1 board, which decompressed graphics on the way to the
-console. Somebody else decompressed all of it ahead of time and rebuilt the
-cartridge at ninety six megabit, so the chip is no longer doing anything. Both
-rebuilds still declare an S-DD1 in the header, and both declare eight megabytes
-while being twelve.
+console. neviksti reverse-engineered the chip and wrote the Star Ocean no
+S-DD1/96Mbit hack, which decompresses all of it ahead of time and rebuilds the
+cartridge at ninety six megabit, so the chip is no longer doing anything. Two
+patches exist, one for the Japanese original and one for the DeJap English
+translation, and they are not interchangeable.
+
+Both rebuilds still declare an S-DD1 in the header, and both declare eight
+megabytes while being twelve.
 
 Six bytes per header mirror: the chipset field, the size field, and the checksum
 with its complement. Both mirrors, then the checksum recomputed over the result.

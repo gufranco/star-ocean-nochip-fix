@@ -1,9 +1,9 @@
 {
-  "comment": "The two images this corrects, pinned at both ends. A name, a length and four digests are measurements of a file rather than any part of it, and a digest reconstructs nothing. Nothing here carries a byte of either image.",
+  "comment": "The two images this corrects, pinned at both ends. Both are neviksti's Star Ocean no S-DD1/96Mbit hack, one applied to the Japanese original and one to the DeJap English translation. A name, a length and four digests are measurements of a file rather than any part of it, and a digest reconstructs nothing. Nothing here carries a byte of either image.",
   "editions": [
     {
       "name": "japanese",
-      "summary": "The Japanese rebuild, decompressed to ninety six megabit.",
+      "summary": "neviksti's patch on the Japanese original, decompressed to ninety six megabit.",
       "reads": "Star Ocean (J) SDD1 Patched (Hack) v1 Neviksti.sfc",
       "writes": "star-ocean-jp-nochip.sfc",
       "bytes": 12582912,
@@ -22,7 +22,7 @@
     },
     {
       "name": "english",
-      "summary": "The same rebuild carrying the English translation.",
+      "summary": "The same patch on the DeJap English translation. The two are not interchangeable.",
       "reads": "Star Ocean (J) T+Eng, SDD1 Patched v1 DeJap, SDD1 v1 Neviksti.sfc",
       "writes": "star-ocean-en-nochip.sfc",
       "bytes": 12582912,
