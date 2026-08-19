@@ -23,10 +23,11 @@
   <a href="https://github.com/gufranco/star-ocean-nochip-fix/issues">Issues</a>
 </p>
 
-**12** bytes changed per image · **2** header mirrors · **8** digests pinned per edition · **66** tests · **100%** statement and branch coverage
+**12** bytes changed per image · **2** header mirrors · **4** links of the chain pinned per edition · **119** tests · **100%** statement and branch coverage
 
 ```bash
-python3 starocean/fix.py roms dist
+star-ocean-verify           # reads only: says what is here and whether it is right
+star-ocean-fix              # confirms, corrects, confirms again, writes
 #   japanese: -> dist/star-ocean-jp-nochip.sfc (37131fc1…)
 #   english:  -> dist/star-ocean-en-nochip.sfc (32bab94e…)
 #   2 of 2 corrected
@@ -95,24 +96,51 @@ cd star-ocean-nochip-fix
 
 ### Run
 
-You supply the images. Apply neviksti's patch to a copy of Star Ocean you own, put the result in [`roms/`](roms/) under the filename in [`roms/README.md`](roms/README.md), then:
+You supply the files. Put whatever you have in [`roms/`](roms/) under the filenames in [`roms/README.md`](roms/README.md), then ask what is there:
+
+```bash
+python3 starocean/verify.py roms dist
+#   japanese: source matches, Star Ocean (Japan).sfc
+#   japanese: patch absent, 96Mbit_SO_JPN.xdelta
+#   ...
+```
+
+That reads and writes nothing. When the image the correction consumes is present:
 
 ```bash
 python3 starocean/fix.py roms dist
 ```
 
+Installed, those are `star-ocean-verify` and `star-ocean-fix`.
+
 Point `STAR_OCEAN_ROM_DIR` at a library somewhere else to read from there instead. A named directory wins even when it turns out to be empty, because quietly falling back from a path somebody typed turns a typo into a run that reports nothing needed doing.
 
 ## The two editions
 
-| Edition | Built from | Writes |
-|:--------|:-----------|:-------|
-| `japanese` | neviksti's patch on the Japanese original | `star-ocean-jp-nochip.sfc` |
-| `english` | neviksti's patch on the DeJap translation | `star-ocean-en-nochip.sfc` |
-
 The two patches are not interchangeable, which is why these are two editions rather than one with a flag.
 
-Every filename and all eight digests per edition live in [`roms.manifest.json`](roms.manifest.json) and are printed in [`roms/README.md`](roms/README.md). The table is data rather than code: filenames and digests are the two things most likely to need a correction of their own, and a table nobody has to read Python to check is easier to correct.
+| Edition | Starts from | Patch | Writes |
+|:--------|:------------|:------|:-------|
+| `japanese` | `Star Ocean (Japan).sfc` | `96Mbit_SO_JPN.xdelta` | `star-ocean-jp-nochip.sfc` |
+| `english` | the same cartridge with DeJap's translation applied | `96Mbit_SO_ENG.xdelta` | `star-ocean-en-nochip.sfc` |
+
+For the English chain the order matters and is neviksti's, not mine: apply DeJap's translation patch first and the 96 Mbit patch second. The other way round does not work.
+
+## The whole chain is pinned, not just the ends
+
+Pinning only the image the correction consumes tells you what to end up with and nothing about how. If you have the wrong file, the only thing it can say is "this is not the one named", when the useful answer is usually that the wrong patch was applied two steps earlier.
+
+So every file between a cartridge you own and the image this writes carries four digests:
+
+```mermaid
+graph LR
+    A[retail cartridge] -->|neviksti's patch| B[96 Mbit rebuild]
+    B -->|this repository| C[corrected image]
+```
+
+`star-ocean-verify` looks for all four links, reports each as absent, matching, altered or corrupt, and writes nothing. A report naming which link is wrong points at the step to redo.
+
+Every filename and every digest lives in [`roms.manifest.json`](roms.manifest.json) and is printed in [`roms/README.md`](roms/README.md). The table is data rather than code: filenames and digests are the two things most likely to need a correction of their own, and a table nobody has to read Python to check is easier to correct.
 
 ## Why both ends are pinned
 
@@ -147,10 +175,14 @@ for f in starocean/*.test.py conformance/*.test.py; do python3 "$f"; done
 |:------|:-----|:-------|
 | Editions | [`starocean/editions.test.py`](starocean/editions.test.py) | The manifest, digest widths, lookup by name and by digest |
 | Fix | [`starocean/fix.test.py`](starocean/fix.test.py) | Correcting, confirming at both ends, every refusal, the command line |
+| Verify | [`starocean/verify.test.py`](starocean/verify.test.py) | The four states, the verdict, and that nothing is ever written |
+| Package | [`starocean/package.test.py`](starocean/package.test.py) | The exported surface, and that both commands resolve |
 | Version | [`starocean/version.test.py`](starocean/version.test.py) | One version, in the file the release script writes |
 | Images | [`conformance/against_images.test.py`](conformance/against_images.test.py) | The real files: every pinned digest, and that only header mirrors move |
 
-The last one is skipped rather than passed when neither image is present, so a run that proved nothing never reads as a run that proved something. CI attempts it on every push and annotates the skip.
+The last one is skipped rather than passed when neither image is present, so a run that proved nothing never reads as a run that proved something. CI attempts it on every push and annotates the skip, and it runs the correction twice and compares what came out, because a correction that is not idempotent is one nobody can safely re-run and both runs write a file of the right length.
+
+A weekly job checks whether the vendored packages have moved and opens an issue if so. Taking them stays a deliberate act: a header reader that changes what it reads changes what every pinned digest means.
 
 ## Built on
 
@@ -160,6 +192,17 @@ The last one is skipped rather than passed when neither image is present, so a r
 | [`snes-mapper`](https://github.com/gufranco/snes-mapper-python) | Decides where a header is, out of the places one can be |
 
 Both are carried as submodules. `snes-mapper` arrives nested inside `snes-rom-image`, which is why the clone above is recursive.
+
+## Using it as a library
+
+```python
+from starocean import EDITIONS, look, report, apply
+
+for line in report(look("roms", EDITIONS, "dist")):
+    print(line)
+```
+
+`look` reads, `apply` corrects a supplied image and hands back the bytes, and neither writes anything. `run` is the one that writes.
 
 ## Licence
 

@@ -33,6 +33,10 @@ def digests_of(blob):
     }
 
 
+def a_link(blob, name):
+    return dict(digests_of(blob), bytes=len(blob), name=name)
+
+
 def an_edition(before, after, name="made-up", size=0x100000):
     return editions.Edition(
         name=name,
@@ -42,6 +46,8 @@ def an_edition(before, after, name="made-up", size=0x100000):
         size=size,
         before=digests_of(before),
         after=digests_of(after),
+        source=a_link(b"a cartridge" * 8, "cartridge.sfc"),
+        patch=a_link(b"a patch" * 8, "patch.xdelta"),
     )
 
 

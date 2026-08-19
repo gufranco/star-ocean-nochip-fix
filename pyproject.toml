@@ -20,6 +20,10 @@ classifiers = [
   "Topic :: System :: Emulators",
 ]
 
+[project.scripts]
+star-ocean-fix = "starocean.fix:command"
+star-ocean-verify = "starocean.verify:command"
+
 [project.urls]
 Homepage = "https://github.com/gufranco/star-ocean-nochip-fix"
 Source = "https://github.com/gufranco/star-ocean-nochip-fix"
@@ -66,10 +70,12 @@ ignore = [
 # statement left behind, and routing it through a logger would put a level and a
 # timestamp in front of a report meant to be read by a person.
 "starocean/fix.py" = ["T201", "E402"]
+"starocean/verify.py" = ["T201", "E402"]
 # The two packages this is built on are submodules rather than installed
 # distributions, so their paths go on sys.path before they can be imported.
 # Nothing else in the file runs before those imports.
 "conformance/*.test.py" = ["E402"]
+"starocean/*.test.py" = ["E402"]
 
 [tool.coverage.run]
 source = ["starocean", "conformance"]
@@ -91,4 +97,9 @@ exclude_also = [
   # there is nothing behind it left to exercise. Importing the module to cover
   # the guard would run the tool rather than test it.
   'if __name__ == "__main__":',
+  # The installed console command is the same guard wearing a name that setuptools
+  # can point an entry point at. It reads argv and raises SystemExit around the
+  # function beneath it, which is what the tests already drive directly. That the
+  # entry points resolve to it is asserted in package.test.py.
+  "def command\\(\\):",
 ]

@@ -97,13 +97,41 @@ jobs:
         with:
           python-version: ${{ env.PYTHON_VERSION }}
 
+      - name: Say what is here before touching any of it
+        run: |
+          status=0
+          python starocean/verify.py roms dist || status="$?"
+          if [ "${status}" -eq 1 ]; then
+            exit 1
+          fi
+        shell: bash
+
       - name: Correct every image present
         run: |
           status=0
           python starocean/fix.py roms dist || status="$?"
           if [ "${status}" -eq 2 ]; then
-            echo "::notice title=Images::Neither image is present on a hosted runner, so the correction was skipped rather than passed. It reads two rebuilds somebody else made, confirms each against four digests, corrects the header, and confirms the result against four more. Run it locally with copies you own, or point STAR_OCEAN_ROM_DIR at them."
+            echo "::notice title=Images::No image from the chain is present on a hosted runner, so the correction and the re-run were skipped rather than passed. They read two rebuilds of somebody else's patch, confirm each against four digests, correct the header, and confirm the result against four more. Run them locally with copies you own, or point STAR_OCEAN_ROM_DIR at them."
             exit 0
           fi
           exit "${status}"
+        shell: bash
+
+      # A correction that is not idempotent is one nobody can safely re-run, and
+      # the failure is invisible because both runs write a file of the right
+      # length. Comparing what the two runs produced is the cheap way to see it.
+      - name: Correct them again and compare what came out
+        run: |
+          if [ ! -d dist ]; then exit 0; fi
+          before=$(python -c 'import hashlib,pathlib,sys; print(*(hashlib.sha256(p.read_bytes()).hexdigest() for p in sorted(pathlib.Path("dist").iterdir())))')
+          python starocean/fix.py roms dist
+          after=$(python -c 'import hashlib,pathlib,sys; print(*(hashlib.sha256(p.read_bytes()).hexdigest() for p in sorted(pathlib.Path("dist").iterdir())))')
+          if [ "${before}" != "${after}" ]; then
+            echo "::error title=Not idempotent::A second run produced different bytes"
+            exit 1
+          fi
+        shell: bash
+
+      - name: Say what is here afterwards
+        run: python starocean/verify.py roms dist
         shell: bash

@@ -197,5 +197,10 @@ def main(argv, catalogue=None):
     return 0
 
 
-if __name__ == "__main__":
+def command():
+    """The installed console command, which takes its arguments from the shell."""
     raise SystemExit(main(sys.argv[1:]))
+
+
+if __name__ == "__main__":
+    command()

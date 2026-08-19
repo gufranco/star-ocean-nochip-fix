@@ -45,10 +45,45 @@ class UnknownEdition(Exception):
     pass
 
 
+class Patch:
+    """The hack the two images are built with, and where to find it."""
+
+    def __init__(self, name, version, author, where, note, archive):
+        self.name = name
+        self.version = version
+        self.author = author
+        self.where = where
+        self.note = note
+        self.archive = archive
+
+    def __repr__(self):
+        return f"<Patch {self.name} {self.version}, by {self.author}>"
+
+
+class Step:
+    """One file in the chain, and whether this repository is what makes it."""
+
+    def __init__(self, what, name, held, produced=False):
+        self.what = what
+        self.name = name
+        self.held = held
+        self.produced = produced
+
+    @property
+    def bytes(self):
+        return self.held["bytes"]
+
+    def digest(self, which=None):
+        return self.held[which or DECIDES]
+
+    def __repr__(self):
+        return f"<Step {self.what}: {self.name}, {self.bytes} bytes>"
+
+
 class Edition:
     """One rebuild: what it is, what it is read from, and what it becomes."""
 
-    def __init__(self, name, summary, reads, writes, size, before, after):
+    def __init__(self, name, summary, reads, writes, size, before, after, source, patch):
         self.name = name
         self.summary = summary
         self.reads = reads
@@ -56,9 +91,38 @@ class Edition:
         self.size = size
         self.before = before
         self.after = after
+        self.source = source
+        self.patch = patch
+
+    def chain(self):
+        """Every file between a cartridge somebody owns and what this writes.
+
+        In the order it is walked, which is also the order somebody without any of
+        it has to obtain things. Only the last step is one this repository makes.
+        """
+        return (
+            Step("source", self.source["name"], self.source),
+            Step("patch", self.patch["name"], self.patch),
+            Step("reads", self.reads, dict(self.before, bytes=self.size)),
+            Step("writes", self.writes, dict(self.after, bytes=self.size), produced=True),
+        )
 
     def __repr__(self):
         return f"<Edition {self.name}, {self.size} bytes>"
+
+
+def load_patch(path=None):
+    """What the manifest says about the hack both images are built with."""
+    with Path(path or MANIFEST).open() as handle:
+        held = json.load(handle)["patch"]
+    return Patch(
+        name=held["name"],
+        version=held["version"],
+        author=held["author"],
+        where=held["where"],
+        note=held["note"],
+        archive=held["archive"],
+    )
 
 
 def load(path=None):
@@ -74,12 +138,16 @@ def load(path=None):
             size=entry["bytes"],
             before=entry["before"],
             after=entry["after"],
+            source=entry["source"],
+            patch=entry["patch"],
         )
         for entry in held["editions"]
     )
 
 
 EDITIONS = load()
+
+PATCH = load_patch()
 
 
 def matching(digest, among=None):

@@ -82,12 +82,23 @@ class ResultTest(unittest.TestCase):
             self.assertEqual(rewrite.checksum(produced, places), declared.checksum, edition.name)
             self.assertTrue(declared.checksum_agrees, edition.name)
 
-    def test_the_result_is_still_a_twelve_megabyte_low_declaration(self):
+    def test_the_result_is_on_the_map_a_twelve_megabyte_image_uses(self):
         for edition in PRESENT:
             produced = fix.apply((SOURCE / edition.reads).read_bytes(), edition)
             declared = mapper.read(produced)
 
             self.assertEqual(len(produced), editions.EXPECTED_BYTES, edition.name)
+            self.assertEqual(
+                mapper.header.board(declared, len(produced)),
+                mapper.header.WHOLEBANK,
+                edition.name,
+            )
+
+    def test_and_the_header_still_sits_where_a_low_declaration_puts_it(self):
+        for edition in PRESENT:
+            produced = fix.apply((SOURCE / edition.reads).read_bytes(), edition)
+            declared = mapper.read(produced)
+
             self.assertEqual(declared.layout, mapper.header.LOROM, edition.name)
             self.assertEqual(declared.at, 0x7FC0, edition.name)
 

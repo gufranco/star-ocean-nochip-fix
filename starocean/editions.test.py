@@ -78,6 +78,100 @@ class DigestTest(unittest.TestCase):
                     self.assertRegex(value, r"^[0-9a-f]+$")
 
 
+class ChainTest(unittest.TestCase):
+    """Every file between a cartridge somebody owns and the corrected image.
+
+    Pinning only the patched image tells a reader what to end up with and nothing
+    about how to get there. The chain is the retail cartridge, the patch applied
+    to it, the image that produces, and the image this writes.
+    """
+
+    def test_the_patch_is_named_with_its_author_and_where_it_lives(self):
+        self.assertEqual(editions.PATCH.author, "neviksti")
+        self.assertTrue(editions.PATCH.where.startswith("https://"))
+        self.assertTrue(editions.PATCH.version)
+
+    def test_the_archive_carrying_the_patch_is_pinned(self):
+        for digest, width in editions.DIGEST_WIDTHS.items():
+            self.assertEqual(len(editions.PATCH.archive[digest]), width, digest)
+
+    def test_every_edition_names_the_cartridge_it_starts_from(self):
+        for edition in editions.EDITIONS:
+            self.assertTrue(edition.source["name"])
+            self.assertGreater(edition.source["bytes"], 0)
+
+    def test_and_the_patch_that_turns_it_into_the_image_read(self):
+        for edition in editions.EDITIONS:
+            self.assertTrue(edition.patch["name"].endswith(".xdelta"))
+
+    def test_each_edition_uses_a_patch_of_its_own(self):
+        used = [edition.patch["name"] for edition in editions.EDITIONS]
+
+        self.assertEqual(len(used), len(set(used)))
+
+    def test_each_edition_starts_from_a_cartridge_of_its_own(self):
+        used = [edition.source["sha256"] for edition in editions.EDITIONS]
+
+        self.assertEqual(len(used), len(set(used)))
+
+    def test_every_link_in_the_chain_pins_all_four_digests(self):
+        for edition in editions.EDITIONS:
+            for link in (edition.source, edition.patch, edition.before, edition.after):
+                for digest, width in editions.DIGEST_WIDTHS.items():
+                    self.assertEqual(len(link[digest]), width, (edition.name, digest))
+
+    def test_the_cartridge_is_smaller_than_what_the_patch_makes_of_it(self):
+        for edition in editions.EDITIONS:
+            self.assertLess(edition.source["bytes"], edition.size, edition.name)
+
+    def test_every_link_of_every_edition_is_a_distinct_file(self):
+        seen = [
+            link["sha256"]
+            for edition in editions.EDITIONS
+            for link in (edition.source, edition.patch, edition.before, edition.after)
+        ]
+
+        self.assertEqual(len(seen), len(set(seen)))
+
+    def test_the_chain_is_offered_in_the_order_it_is_walked(self):
+        walked = editions.EDITIONS[0].chain()
+
+        self.assertEqual(
+            [step.what for step in walked],
+            ["source", "patch", "reads", "writes"],
+        )
+
+    def test_every_step_of_the_chain_carries_a_name_and_a_length(self):
+        for edition in editions.EDITIONS:
+            for step in edition.chain():
+                self.assertTrue(step.name, (edition.name, step.what))
+                self.assertGreater(step.bytes, 0, (edition.name, step.what))
+
+    def test_a_step_prints_as_what_it_is_and_what_it_names(self):
+        step = editions.EDITIONS[0].chain()[0]
+
+        self.assertIn(step.what, repr(step))
+        self.assertIn(step.name, repr(step))
+
+    def test_a_patch_prints_as_its_name_version_and_author(self):
+        printed = repr(editions.PATCH)
+
+        self.assertIn(editions.PATCH.author, printed)
+        self.assertIn(editions.PATCH.version, printed)
+
+    def test_a_step_offers_the_digest_that_decides_and_any_other(self):
+        step = editions.EDITIONS[0].chain()[0]
+
+        self.assertEqual(step.digest(), step.held[editions.DECIDES])
+        self.assertEqual(step.digest("crc32"), step.held["crc32"])
+
+    def test_only_the_last_step_is_one_this_repository_produces(self):
+        for edition in editions.EDITIONS:
+            produced = [step.what for step in edition.chain() if step.produced]
+
+            self.assertEqual(produced, ["writes"])
+
+
 class LookupTest(unittest.TestCase):
     def test_an_edition_is_found_by_the_digest_of_what_it_reads(self):
         wanted = editions.EDITIONS[0]

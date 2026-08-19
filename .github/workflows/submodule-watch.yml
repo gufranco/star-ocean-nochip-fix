@@ -1,0 +1,64 @@
+name: Submodule watch
+
+on:
+  schedule:
+    - cron: "0 6 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+concurrency:
+  group: submodule-watch
+  cancel-in-progress: false
+
+jobs:
+  watch:
+    name: Check whether the packages moved
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          submodules: recursive
+
+      - name: Compare every submodule against its upstream default branch
+        id: compare
+        run: |
+          behind=""
+          while read -r _ path _; do
+            [ -d "${path}" ] || continue
+            upstream=$(git -C "${path}" remote get-url origin)
+            git -C "${path}" fetch --quiet origin HEAD
+            here=$(git -C "${path}" rev-parse HEAD)
+            there=$(git -C "${path}" rev-parse FETCH_HEAD)
+            if [ "${here}" != "${there}" ]; then
+              count=$(git -C "${path}" rev-list --count "${here}..${there}")
+              behind="${behind}- \`${path}\` is ${count} commit(s) behind ${upstream}: \`${here:0:8}\` -> \`${there:0:8}\`"$'\n'
+            fi
+          done < <(git config --file .gitmodules --get-regexp path | sed 's/submodule\.\(.*\)\.path /\1 /' | awk '{print $1, $2, $2}')
+          {
+            echo "behind<<EOF"
+            echo "${behind}"
+            echo "EOF"
+          } >> "${GITHUB_OUTPUT}"
+        shell: bash
+
+      - name: Say so, once
+        if: steps.compare.outputs.behind != ''
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          BEHIND: ${{ steps.compare.outputs.behind }}
+          TITLE: A vendored package has moved
+        run: |
+          existing=$(gh issue list --state open --search "${TITLE} in:title" --json number --jq '.[0].number // ""')
+          body="The packages this is built on have moved upstream. Bumping them is a deliberate act rather than an automatic one, because a header reader that changes what it reads changes what every pinned digest means.
+
+          ${BEHIND}
+          To take them: \`git submodule update --remote --recursive\`, then run the tests and the image checks before committing the new pointers."
+          if [ -n "${existing}" ]; then
+            gh issue comment "${existing}" --body "${body}"
+          else
+            gh issue create --title "${TITLE}" --body "${body}"
+          fi
+        shell: bash
