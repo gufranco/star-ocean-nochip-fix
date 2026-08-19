@@ -1,0 +1,3 @@
+[submodule "packages/snes-rom-image"]
+	path = packages/snes-rom-image
+	url = https://github.com/gufranco/snes-rom-image-python.git

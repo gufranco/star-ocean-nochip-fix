@@ -1,0 +1,94 @@
+[build-system]
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "starocean"
+description = "Correct the header of two Star Ocean rebuilds that no longer carry the coprocessor they still declare."
+readme = "README.md"
+license = "MIT"
+license-files = ["LICENSE"]
+requires-python = ">=3.12"
+dynamic = ["version"]
+keywords = ["snes", "star-ocean", "sdd1", "header", "cartridge", "checksum"]
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "Intended Audience :: Developers",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+  "Programming Language :: Python :: 3.14",
+  "Topic :: System :: Emulators",
+]
+
+[project.urls]
+Homepage = "https://github.com/gufranco/star-ocean-nochip-fix"
+Source = "https://github.com/gufranco/star-ocean-nochip-fix"
+Issues = "https://github.com/gufranco/star-ocean-nochip-fix/issues"
+
+[tool.setuptools]
+packages = ["starocean"]
+
+[tool.setuptools.dynamic]
+version = { attr = "starocean.version.VERSION" }
+
+[tool.setuptools.exclude-package-data]
+mapper = ["*.test.py"]
+
+[tool.ruff]
+extend-exclude = ["packages"]
+target-version = "py312"
+line-length = 100
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "UP", "B", "SIM", "RUF", "PL", "BLE", "C4", "N", "A", "T20", "PTH"]
+ignore = [
+  "PLR0913",
+  "PLR2004",
+  "PLR0912",
+  "PLR0915",
+  "PLR0911",
+  "PLC0415",
+  "PLR0917",
+  "E501",
+  # N818 wants every exception to end in Error. The control flow signals here are
+  # named the way CPython names its own: StopIteration, SystemExit and
+  # GeneratorExit carry no suffix either. The exceptions that report a genuine
+  # failure do end in Error.
+  "N818",
+]
+
+[tool.ruff.lint.per-file-ignores]
+# A test file sits beside the module it covers and is named after it, so its
+# module name carries a dot that N999 rejects. The layout is deliberate: a
+# module and its tests are read together.
+"*.test.py" = ["PLR2004", "N999"]
+# This is a command line tool. Printing is its output, not a stray debug
+# statement left behind, and routing it through a logger would put a level and a
+# timestamp in front of a report meant to be read by a person.
+"starocean/fix.py" = ["T201", "E402"]
+# The two packages this is built on are submodules rather than installed
+# distributions, so their paths go on sys.path before they can be imported.
+# Nothing else in the file runs before those imports.
+"conformance/*.test.py" = ["E402"]
+
+[tool.coverage.run]
+source = ["starocean", "conformance"]
+branch = true
+omit = [
+  # Every check in here is skipped unless the images are on disk, and a skipped
+  # test contributes no coverage. On a runner with an empty directory the whole
+  # file would read as uncovered and fail the gate for a reason that has nothing
+  # to do with the code. The modules it exercises are measured by the tests
+  # beside them, so what is set aside is the bookkeeping of the checks.
+  "conformance/against_images.test.py",
+]
+
+[tool.coverage.report]
+fail_under = 100
+show_missing = true
+exclude_also = [
+  # The command line guard hands argv to a function that is itself tested, so
+  # there is nothing behind it left to exercise. Importing the module to cover
+  # the guard would run the tool rather than test it.
+  'if __name__ == "__main__":',
+]

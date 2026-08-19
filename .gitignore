@@ -1,0 +1,14 @@
+__pycache__/
+.ruff_cache/
+.coverage
+coverage.json
+node_modules/
+build/
+*.egg-info/
+.DS_Store
+
+roms/*
+!roms/README.md
+dist/
+*.sfc
+*.smc

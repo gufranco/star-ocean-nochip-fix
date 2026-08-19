@@ -1,0 +1,43 @@
+{
+  "comment": "The two images this corrects, pinned at both ends. A name, a length and four digests are measurements of a file rather than any part of it, and a digest reconstructs nothing. Nothing here carries a byte of either image.",
+  "editions": [
+    {
+      "name": "japanese",
+      "summary": "The Japanese rebuild, decompressed to ninety six megabit.",
+      "reads": "Star Ocean (J) SDD1 Patched (Hack) v1 Neviksti.sfc",
+      "writes": "star-ocean-jp-nochip.sfc",
+      "bytes": 12582912,
+      "before": {
+        "crc32": "4dbe75be",
+        "md5": "2bfd0e8ed3510109d728a1bbf380827b",
+        "sha1": "947e4d19004f036d7586718d3414d36b64ecdf68",
+        "sha256": "e5ba9bef71c8ea31ce9650b90a60245c3434ff679475f847903011bf69e6d338"
+      },
+      "after": {
+        "crc32": "4cde067c",
+        "md5": "f4cf8181ecfcf553be8f6fcbac3d47cc",
+        "sha1": "1227eeb4339fc191c08caab33b9746df36425b85",
+        "sha256": "37131fc112149dc7946c229ade1e226aebc4e2749edf7cf9470bff6952760924"
+      }
+    },
+    {
+      "name": "english",
+      "summary": "The same rebuild carrying the English translation.",
+      "reads": "Star Ocean (J) T+Eng, SDD1 Patched v1 DeJap, SDD1 v1 Neviksti.sfc",
+      "writes": "star-ocean-en-nochip.sfc",
+      "bytes": 12582912,
+      "before": {
+        "crc32": "b1d82240",
+        "md5": "8ac766702be51975faab7a431c89d9b2",
+        "sha1": "7dbaa0265bb5d33422808bad1041cdc8f9585eb4",
+        "sha256": "1bcb3b8b58f19a91540aeb5ca975fe2386ca0b55a5ff924be6a3514010b2e5c3"
+      },
+      "after": {
+        "crc32": "6db1c7d3",
+        "md5": "40336902d0b865eecf0ffe1235c11333",
+        "sha1": "77107cba44e45928cf2fa1ed67390ed1f86649e0",
+        "sha256": "32bab94ed1abc94a3b0bc0e1315c88a759da82b995e4ab0f0d2970afe94a4ee5"
+      }
+    }
+  ]
+}
