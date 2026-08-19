@@ -99,6 +99,9 @@ jobs:
 
       - name: Say what is here before touching any of it
         run: |
+          # verify exits 0 when what is here matches, 1 when something does not,
+          # and 2 when nothing from the chain is here at all. Only 1 is a failure:
+          # a hosted runner has none of these files and never will.
           status=0
           python starocean/verify.py roms dist || status="$?"
           if [ "${status}" -eq 1 ]; then
@@ -133,5 +136,13 @@ jobs:
         shell: bash
 
       - name: Say what is here afterwards
-        run: python starocean/verify.py roms dist
+        run: |
+          # verify exits 0 when what is here matches, 1 when something does not,
+          # and 2 when nothing from the chain is here at all. Only 1 is a failure:
+          # a hosted runner has none of these files and never will.
+          status=0
+          python starocean/verify.py roms dist || status="$?"
+          if [ "${status}" -eq 1 ]; then
+            exit 1
+          fi
         shell: bash
