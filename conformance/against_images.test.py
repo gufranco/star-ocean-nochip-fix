@@ -39,18 +39,18 @@ WHY_NOT = (
 
 @unittest.skipUnless(PRESENT, WHY_NOT)
 class SourceTest(unittest.TestCase):
-    def test_every_image_present_is_the_length_the_manifest_pins(self):
+    def test_every_image_present_is_the_length_the_manifest_pins(self) -> None:
         for edition in PRESENT:
             self.assertEqual((SOURCE / edition.reads).stat().st_size, edition.size, edition.name)
 
-    def test_every_image_present_matches_all_four_of_its_pinned_digests(self):
+    def test_every_image_present_matches_all_four_of_its_pinned_digests(self) -> None:
         for edition in PRESENT:
             found = fix.digests_of((SOURCE / edition.reads).read_bytes())
 
             for digest in editions.DIGESTS:
                 self.assertEqual(found[digest], edition.before[digest], (edition.name, digest))
 
-    def test_every_image_present_still_claims_the_chip_it_no_longer_has(self):
+    def test_every_image_present_still_claims_the_chip_it_no_longer_has(self) -> None:
         for edition in PRESENT:
             image = (SOURCE / edition.reads).read_bytes()
 
@@ -59,7 +59,7 @@ class SourceTest(unittest.TestCase):
 
 @unittest.skipUnless(PRESENT, WHY_NOT)
 class ResultTest(unittest.TestCase):
-    def test_correcting_each_one_produces_exactly_what_was_promised(self):
+    def test_correcting_each_one_produces_exactly_what_was_promised(self) -> None:
         for edition in PRESENT:
             produced = fix.apply((SOURCE / edition.reads).read_bytes(), edition)
             found = fix.digests_of(produced)
@@ -67,13 +67,13 @@ class ResultTest(unittest.TestCase):
             for digest in editions.DIGESTS:
                 self.assertEqual(found[digest], edition.after[digest], (edition.name, digest))
 
-    def test_the_result_declares_no_coprocessor_and_the_length_it_has(self):
+    def test_the_result_declares_no_coprocessor_and_the_length_it_has(self) -> None:
         for edition in PRESENT:
             produced = fix.apply((SOURCE / edition.reads).read_bytes(), edition)
 
             self.assertFalse(rewrite.needs_rewrite(produced), edition.name)
 
-    def test_the_result_carries_a_checksum_that_covers_it(self):
+    def test_the_result_carries_a_checksum_that_covers_it(self) -> None:
         for edition in PRESENT:
             produced = fix.apply((SOURCE / edition.reads).read_bytes(), edition)
             places = rewrite.mirrors(produced)
@@ -82,7 +82,7 @@ class ResultTest(unittest.TestCase):
             self.assertEqual(rewrite.checksum(produced, places), declared.checksum, edition.name)
             self.assertTrue(declared.checksum_agrees, edition.name)
 
-    def test_the_result_is_on_the_map_a_twelve_megabyte_image_uses(self):
+    def test_the_result_is_on_the_map_a_twelve_megabyte_image_uses(self) -> None:
         for edition in PRESENT:
             produced = fix.apply((SOURCE / edition.reads).read_bytes(), edition)
             declared = mapper.read(produced)
@@ -94,7 +94,7 @@ class ResultTest(unittest.TestCase):
                 edition.name,
             )
 
-    def test_and_the_header_still_sits_where_a_low_declaration_puts_it(self):
+    def test_and_the_header_still_sits_where_a_low_declaration_puts_it(self) -> None:
         for edition in PRESENT:
             produced = fix.apply((SOURCE / edition.reads).read_bytes(), edition)
             declared = mapper.read(produced)
@@ -102,7 +102,7 @@ class ResultTest(unittest.TestCase):
             self.assertEqual(declared.layout, mapper.header.LOROM, edition.name)
             self.assertEqual(declared.at, 0x7FC0, edition.name)
 
-    def test_only_the_header_mirrors_are_touched(self):
+    def test_only_the_header_mirrors_are_touched(self) -> None:
         for edition in PRESENT:
             image = (SOURCE / edition.reads).read_bytes()
             produced = fix.apply(image, edition)
@@ -117,7 +117,7 @@ class ResultTest(unittest.TestCase):
                     (edition.name, hex(at)),
                 )
 
-    def test_correcting_a_corrected_image_changes_nothing_further(self):
+    def test_correcting_a_corrected_image_changes_nothing_further(self) -> None:
         for edition in PRESENT:
             produced = fix.apply((SOURCE / edition.reads).read_bytes(), edition)
 
@@ -126,7 +126,7 @@ class ResultTest(unittest.TestCase):
 
 @unittest.skipUnless(PRESENT, WHY_NOT)
 class RunTest(unittest.TestCase):
-    def test_each_one_is_written_out_under_the_name_it_was_given(self):
+    def test_each_one_is_written_out_under_the_name_it_was_given(self) -> None:
         into = Path(tempfile.mkdtemp())
 
         for edition in PRESENT:

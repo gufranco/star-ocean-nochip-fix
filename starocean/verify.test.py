@@ -2,15 +2,17 @@ import hashlib
 import sys
 import tempfile
 import unittest
+import unittest.mock
 import zlib
 from pathlib import Path
+from typing import Any, override
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from starocean import editions, verify
 
 
-def digests_of(blob):
+def digests_of(blob: bytes) -> dict[str, Any]:
     return {
         "bytes": len(blob),
         "crc32": f"{zlib.crc32(blob) & 0xFFFFFFFF:08x}",
@@ -20,7 +22,7 @@ def digests_of(blob):
     }
 
 
-def an_edition(name="made-up", **files):
+def an_edition(name: str = "made-up", **files: bytes) -> editions.Edition:
     held = {what: digests_of(blob) for what, blob in files.items()}
     return editions.Edition(
         name=name,
@@ -44,36 +46,37 @@ EDITION = an_edition(source=SOURCE, patch=PATCH, reads=READS, writes=WRITES)
 
 
 class StateTest(unittest.TestCase):
-    def setUp(self):
+    @override
+    def setUp(self) -> None:
         self.where = Path(tempfile.mkdtemp())
 
-    def test_a_file_that_is_not_there_is_reported_as_absent(self):
+    def test_a_file_that_is_not_there_is_reported_as_absent(self) -> None:
         found = verify.look(self.where, (EDITION,))
 
         self.assertTrue(all(one.state == verify.ABSENT for one in found))
 
-    def test_a_file_that_matches_is_reported_as_matching(self):
+    def test_a_file_that_matches_is_reported_as_matching(self) -> None:
         (self.where / "reads.sfc").write_bytes(READS)
 
         found = {one.step.what: one.state for one in verify.look(self.where, (EDITION,))}
 
         self.assertEqual(found["reads"], verify.MATCHES)
 
-    def test_a_file_of_the_right_length_and_wrong_content_is_altered(self):
+    def test_a_file_of_the_right_length_and_wrong_content_is_altered(self) -> None:
         (self.where / "reads.sfc").write_bytes(bytes(len(READS)))
 
         found = {one.step.what: one.state for one in verify.look(self.where, (EDITION,))}
 
         self.assertEqual(found["reads"], verify.ALTERED)
 
-    def test_a_file_of_the_wrong_length_is_altered_too(self):
+    def test_a_file_of_the_wrong_length_is_altered_too(self) -> None:
         (self.where / "reads.sfc").write_bytes(b"short")
 
         found = {one.step.what: one.state for one in verify.look(self.where, (EDITION,))}
 
         self.assertEqual(found["reads"], verify.ALTERED)
 
-    def test_a_file_matching_on_the_deciding_digest_but_not_the_rest_is_corrupt(self):
+    def test_a_file_matching_on_the_deciding_digest_but_not_the_rest_is_corrupt(self) -> None:
         edition = an_edition(source=SOURCE, patch=PATCH, reads=READS, writes=WRITES)
         edition.before = dict(edition.before, crc32="00000000")
         (self.where / "reads.sfc").write_bytes(READS)
@@ -82,12 +85,12 @@ class StateTest(unittest.TestCase):
 
         self.assertEqual(found["reads"], verify.CORRUPT)
 
-    def test_every_step_of_the_chain_is_looked_for(self):
+    def test_every_step_of_the_chain_is_looked_for(self) -> None:
         found = verify.look(self.where, (EDITION,))
 
         self.assertEqual([one.step.what for one in found], ["source", "patch", "reads", "writes"])
 
-    def test_the_place_a_file_was_looked_for_is_reported(self):
+    def test_the_place_a_file_was_looked_for_is_reported(self) -> None:
         into = self.where / "out"
 
         found = verify.look(self.where, (EDITION,), into)
@@ -96,7 +99,7 @@ class StateTest(unittest.TestCase):
             wanted = into if one.step.produced else self.where
             self.assertEqual(one.path.parent, wanted, one.step.what)
 
-    def test_a_file_this_repository_makes_is_never_looked_for_among_the_sources(self):
+    def test_a_file_this_repository_makes_is_never_looked_for_among_the_sources(self) -> None:
         into = self.where / "out"
         (self.where / "writes.sfc").write_bytes(WRITES)
 
@@ -104,7 +107,7 @@ class StateTest(unittest.TestCase):
 
         self.assertEqual(found["writes"], verify.ABSENT)
 
-    def test_a_produced_file_is_looked_for_where_it_would_be_written(self):
+    def test_a_produced_file_is_looked_for_where_it_would_be_written(self) -> None:
         into = self.where / "out"
         into.mkdir()
         (into / "writes.sfc").write_bytes(WRITES)
@@ -113,7 +116,7 @@ class StateTest(unittest.TestCase):
 
         self.assertEqual(found["writes"], verify.MATCHES)
 
-    def test_a_directory_beneath_holding_something_else_is_walked_past(self):
+    def test_a_directory_beneath_holding_something_else_is_walked_past(self) -> None:
         (self.where / "deep").mkdir()
         (self.where / "deep" / "reads.sfc").mkdir()
 
@@ -121,7 +124,7 @@ class StateTest(unittest.TestCase):
 
         self.assertEqual(found["reads"], verify.ABSENT)
 
-    def test_a_subdirectory_is_searched_as_well(self):
+    def test_a_subdirectory_is_searched_as_well(self) -> None:
         (self.where / "somewhere").mkdir()
         (self.where / "somewhere" / "reads.sfc").write_bytes(READS)
 
@@ -129,7 +132,7 @@ class StateTest(unittest.TestCase):
 
         self.assertEqual(found["reads"], verify.MATCHES)
 
-    def test_a_finding_prints_as_its_state_and_what_it_names(self):
+    def test_a_finding_prints_as_its_state_and_what_it_names(self) -> None:
         printed = repr(verify.look(self.where, (EDITION,))[0])
 
         self.assertIn(verify.ABSENT, printed)
@@ -137,22 +140,23 @@ class StateTest(unittest.TestCase):
 
 
 class ReportTest(unittest.TestCase):
-    def setUp(self):
+    @override
+    def setUp(self) -> None:
         self.where = Path(tempfile.mkdtemp())
 
-    def test_every_finding_makes_a_line(self):
+    def test_every_finding_makes_a_line(self) -> None:
         found = verify.look(self.where, (EDITION,))
 
         self.assertEqual(len(verify.report(found)), len(found))
 
-    def test_a_line_names_the_edition_the_step_and_the_state(self):
+    def test_a_line_names_the_edition_the_step_and_the_state(self) -> None:
         line = verify.report(verify.look(self.where, (EDITION,)))[0]
 
         self.assertIn("made-up", line)
         self.assertIn("source", line)
         self.assertIn(verify.ABSENT, line)
 
-    def test_an_altered_file_says_what_was_computed_so_it_can_be_looked_up(self):
+    def test_an_altered_file_says_what_was_computed_so_it_can_be_looked_up(self) -> None:
         (self.where / "reads.sfc").write_bytes(bytes(len(READS)))
 
         lines = [
@@ -165,13 +169,14 @@ class ReportTest(unittest.TestCase):
 
 
 class VerdictTest(unittest.TestCase):
-    def setUp(self):
+    @override
+    def setUp(self) -> None:
         self.where = Path(tempfile.mkdtemp())
 
-    def test_nothing_present_is_neither_pass_nor_fail(self):
+    def test_nothing_present_is_neither_pass_nor_fail(self) -> None:
         self.assertEqual(verify.verdict(verify.look(self.where, (EDITION,))), verify.NOTHING)
 
-    def test_everything_present_and_matching_passes(self):
+    def test_everything_present_and_matching_passes(self) -> None:
         for name, blob in (
             ("source.sfc", SOURCE),
             ("patch.xdelta", PATCH),
@@ -182,12 +187,12 @@ class VerdictTest(unittest.TestCase):
 
         self.assertEqual(verify.verdict(verify.look(self.where, (EDITION,))), verify.SOUND)
 
-    def test_one_file_present_and_matching_still_passes(self):
+    def test_one_file_present_and_matching_still_passes(self) -> None:
         (self.where / "reads.sfc").write_bytes(READS)
 
         self.assertEqual(verify.verdict(verify.look(self.where, (EDITION,))), verify.SOUND)
 
-    def test_one_altered_file_fails_whatever_else_is_right(self):
+    def test_one_altered_file_fails_whatever_else_is_right(self) -> None:
         (self.where / "reads.sfc").write_bytes(READS)
         (self.where / "source.sfc").write_bytes(b"not the cartridge")
 
@@ -195,23 +200,24 @@ class VerdictTest(unittest.TestCase):
 
 
 class MainTest(unittest.TestCase):
-    def setUp(self):
+    @override
+    def setUp(self) -> None:
         self.where = Path(tempfile.mkdtemp())
 
-    def test_an_empty_directory_reports_that_nothing_was_found(self):
+    def test_an_empty_directory_reports_that_nothing_was_found(self) -> None:
         self.assertEqual(verify.main([str(self.where)], (EDITION,)), 2)
 
-    def test_a_directory_where_everything_matches_reports_success(self):
+    def test_a_directory_where_everything_matches_reports_success(self) -> None:
         (self.where / "reads.sfc").write_bytes(READS)
 
         self.assertEqual(verify.main([str(self.where)], (EDITION,)), 0)
 
-    def test_a_directory_with_an_altered_file_reports_failure(self):
+    def test_a_directory_with_an_altered_file_reports_failure(self) -> None:
         (self.where / "reads.sfc").write_bytes(bytes(len(READS)))
 
         self.assertEqual(verify.main([str(self.where)], (EDITION,)), 1)
 
-    def test_it_writes_nothing_whatever_it_finds(self):
+    def test_it_writes_nothing_whatever_it_finds(self) -> None:
         (self.where / "reads.sfc").write_bytes(READS)
         before = sorted(path.name for path in self.where.iterdir())
 
@@ -219,15 +225,35 @@ class MainTest(unittest.TestCase):
 
         self.assertEqual(sorted(path.name for path in self.where.iterdir()), before)
 
-    def test_no_arguments_reads_the_directories_in_this_repository(self):
+    def test_no_arguments_reads_the_directories_in_this_repository(self) -> None:
         self.assertIn(verify.main([], (EDITION,)), (0, 1, 2))
 
-    def test_a_second_argument_names_where_produced_files_are_looked_for(self):
+    def test_a_second_argument_names_where_produced_files_are_looked_for(self) -> None:
         into = self.where / "out"
         into.mkdir()
         (into / "writes.sfc").write_bytes(WRITES)
 
         self.assertEqual(verify.main([str(self.where), str(into)], (EDITION,)), 0)
+
+
+class CommandTest(unittest.TestCase):
+    """The installed console command, which is the only caller of sys.argv here.
+
+    It exists so that a shell can run this without knowing the module layout, and
+    it is one line, and that line is the difference between exiting with what the
+    run decided and exiting with zero regardless.
+    """
+
+    def test_it_exits_with_what_the_run_decided(self) -> None:
+        with tempfile.TemporaryDirectory() as empty:
+            argv = [sys.argv[0], empty, empty]
+            with (
+                unittest.mock.patch.object(sys, "argv", argv),
+                self.assertRaises(SystemExit) as held,
+            ):
+                verify.command()
+
+        self.assertEqual(held.exception.code, 2)
 
 
 if __name__ == "__main__":

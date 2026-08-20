@@ -20,6 +20,7 @@ import hashlib
 import os
 import sys
 import zlib
+from collections.abc import Mapping, Sequence
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -68,14 +69,16 @@ class Missing(Exception):
     pass
 
 
-def source_directories(environment=None):
+def source_directories(environment: Mapping[str, str] | None = None) -> tuple[Path, ...]:
     """Everywhere a cartridge is looked for, nearest intent first."""
     named = (environment if environment is not None else os.environ).get(DIRECTORY_VARIABLE)
     places = [Path(named)] if named else []
     return (*places, DEFAULT_SOURCE, ALONGSIDE)
 
 
-def source_directory(environment=None, places=None):
+def source_directory(
+    environment: Mapping[str, str] | None = None, places: Sequence[Path] | None = None
+) -> Path:
     """Where the images are read from: what was named, or the folder in here.
 
     A named directory wins even when it turns out to be empty. Quietly falling back
@@ -91,7 +94,7 @@ def source_directory(environment=None, places=None):
     return DEFAULT_SOURCE
 
 
-def digests_of(image):
+def digests_of(image: bytes) -> dict[str, str]:
     """Every digest the manifest pins, for one image."""
     return {
         "crc32": f"{zlib.crc32(image) & 0xFFFFFFFF:08x}",
@@ -101,10 +104,11 @@ def digests_of(image):
     }
 
 
-def correct(image):
+def correct(image: bytes) -> bytes:
     """The same image declaring no coprocessor, its real size, and a live checksum."""
     try:
-        return rewrite.declare_rom_only(image)
+        corrected: bytes = rewrite.declare_rom_only(image)
+        return corrected
     except NoHeader as reason:
         raise NotACartridge(
             f"nothing in these {len(image)} bytes reads as a cartridge header,"
@@ -112,7 +116,7 @@ def correct(image):
         ) from reason
 
 
-def confirm(image, edition):
+def confirm(image: bytes, edition: editions.Edition) -> editions.Edition:
     """That this really is the image the edition names, before anything is changed."""
     if len(image) != edition.size:
         raise Unrecognised(
@@ -134,7 +138,7 @@ def confirm(image, edition):
     return edition
 
 
-def _cross_check(name, pinned, found):
+def _cross_check(name: str, pinned: Mapping[str, str], found: Mapping[str, str]) -> None:
     """The other three digests have to agree as well.
 
     Reaching here means the deciding digest already matched, so a disagreement is
@@ -153,7 +157,7 @@ def _cross_check(name, pinned, found):
             )
 
 
-def apply(image, edition):
+def apply(image: bytes, edition: editions.Edition) -> bytes:
     """Confirm, correct, confirm again, and hand back the bytes."""
     confirm(image, edition)
     produced = correct(image)
@@ -171,7 +175,7 @@ def apply(image, edition):
     return produced
 
 
-def run(edition, source, destination):
+def run(edition: editions.Edition, source: Path | str, destination: Path | str) -> Path:
     """Correct one edition from a directory into a directory."""
     reading = Path(source) / edition.reads
     if not reading.is_file():
@@ -187,7 +191,7 @@ def run(edition, source, destination):
     return writing
 
 
-def main(argv, catalogue=None):
+def main(argv: Sequence[str], catalogue: Sequence[editions.Edition] | None = None) -> int:
     source = Path(argv[0]) if argv else source_directory()
     destination = Path(argv[1]) if len(argv) > 1 else DEFAULT_DESTINATION
     catalogue = editions.EDITIONS if catalogue is None else catalogue
@@ -217,7 +221,7 @@ def main(argv, catalogue=None):
     return 0
 
 
-def command():
+def command() -> None:
     """The installed console command, which takes its arguments from the shell."""
     raise SystemExit(main(sys.argv[1:]))
 

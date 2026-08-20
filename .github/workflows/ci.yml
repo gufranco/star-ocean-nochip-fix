@@ -51,6 +51,28 @@ jobs:
       - name: Lint
         run: ruff check --output-format=github .
 
+  types:
+    name: Types
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          submodules: recursive
+
+      - uses: actions/setup-python@v7
+        with:
+          python-version: ${ env.PYTHON_VERSION }
+
+      - name: Install the type checker
+        run: pipx install mypy==1.14.1
+
+      # Strict, with every optional error class the version offers. A model of
+      # hardware is masked integers and widths end to end, and a width crossing a
+      # boundary it should not is exactly what this catches. The settings live in
+      # pyproject.toml so a local run and this one agree.
+      - name: Every annotation has to hold
+        run: mypy
+
   test:
     name: Tests on Python ${{ matrix.python }}
     runs-on: ubuntu-latest

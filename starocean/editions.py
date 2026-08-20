@@ -21,7 +21,9 @@ Python to check is easier to correct.
 """
 
 import json
+from collections.abc import Mapping, Sequence
 from pathlib import Path
+from typing import Any, override
 
 ROOT = Path(__file__).resolve().parent.parent
 
@@ -48,7 +50,15 @@ class UnknownEdition(Exception):
 class Patch:
     """The hack the two images are built with, and where to find it."""
 
-    def __init__(self, name, version, author, where, note, archive):
+    def __init__(
+        self,
+        name: str,
+        version: str,
+        author: str,
+        where: str,
+        note: str,
+        archive: Mapping[str, Any],
+    ) -> None:
         self.name = name
         self.version = version
         self.author = author
@@ -56,34 +66,51 @@ class Patch:
         self.note = note
         self.archive = archive
 
-    def __repr__(self):
+    @override
+    def __repr__(self) -> str:
         return f"<Patch {self.name} {self.version}, by {self.author}>"
 
 
 class Step:
     """One file in the chain, and whether this repository is what makes it."""
 
-    def __init__(self, what, name, held, produced=False):
+    def __init__(
+        self, what: str, name: str, held: Mapping[str, Any], produced: bool = False
+    ) -> None:
         self.what = what
         self.name = name
         self.held = held
         self.produced = produced
 
     @property
-    def bytes(self):
-        return self.held["bytes"]
+    def bytes(self) -> int:
+        held: int = self.held["bytes"]
+        return held
 
-    def digest(self, which=None):
-        return self.held[which or DECIDES]
+    def digest(self, which: str | None = None) -> str:
+        held: str = self.held[which or DECIDES]
+        return held
 
-    def __repr__(self):
+    @override
+    def __repr__(self) -> str:
         return f"<Step {self.what}: {self.name}, {self.bytes} bytes>"
 
 
 class Edition:
     """One rebuild: what it is, what it is read from, and what it becomes."""
 
-    def __init__(self, name, summary, reads, writes, size, before, after, source, patch):
+    def __init__(
+        self,
+        name: str,
+        summary: str,
+        reads: str,
+        writes: str,
+        size: int,
+        before: Mapping[str, Any],
+        after: Mapping[str, Any],
+        source: Mapping[str, Any],
+        patch: Mapping[str, Any],
+    ) -> None:
         self.name = name
         self.summary = summary
         self.reads = reads
@@ -94,7 +121,7 @@ class Edition:
         self.source = source
         self.patch = patch
 
-    def chain(self):
+    def chain(self) -> tuple[Step, ...]:
         """Every file between a cartridge somebody owns and what this writes.
 
         In the order it is walked, which is also the order somebody without any of
@@ -107,11 +134,12 @@ class Edition:
             Step("writes", self.writes, dict(self.after, bytes=self.size), produced=True),
         )
 
-    def __repr__(self):
+    @override
+    def __repr__(self) -> str:
         return f"<Edition {self.name}, {self.size} bytes>"
 
 
-def load_patch(path=None):
+def load_patch(path: Path | str | None = None) -> Patch:
     """What the manifest says about the hack both images are built with."""
     with Path(path or MANIFEST).open() as handle:
         held = json.load(handle)["patch"]
@@ -125,7 +153,7 @@ def load_patch(path=None):
     )
 
 
-def load(path=None):
+def load(path: Path | str | None = None) -> tuple[Edition, ...]:
     """Every edition the manifest lists, in the order it lists them."""
     with Path(path or MANIFEST).open() as handle:
         held = json.load(handle)
@@ -150,7 +178,7 @@ EDITIONS = load()
 PATCH = load_patch()
 
 
-def matching(digest, among=None):
+def matching(digest: str, among: Sequence[Edition] | None = None) -> Edition | None:
     """The edition an image with that deciding digest is, or nothing."""
     for edition in EDITIONS if among is None else among:
         if edition.before[DECIDES] == digest:
@@ -158,7 +186,7 @@ def matching(digest, among=None):
     return None
 
 
-def named(name, among=None):
+def named(name: str, among: Sequence[Edition] | None = None) -> Edition:
     """The edition of that name."""
     among = EDITIONS if among is None else among
     for edition in among:

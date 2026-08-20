@@ -12,3 +12,4 @@ roms/*
 dist/
 *.sfc
 *.smc
+.mypy_cache/
