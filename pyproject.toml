@@ -39,7 +39,7 @@ version = { attr = "starocean.version.VERSION" }
 mapper = ["*.test.py"]
 
 [tool.ruff]
-extend-exclude = ["packages"]
+extend-exclude = ["snes-rom-image-python"]
 target-version = "py312"
 line-length = 100
 

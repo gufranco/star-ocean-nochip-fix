@@ -191,7 +191,7 @@ A weekly job checks whether the vendored packages have moved and opens an issue 
 | [`snes-rom-image`](https://github.com/gufranco/snes-rom-image-python) | Finds every header mirror, rewrites the fields, recomputes the checksum |
 | [`snes-mapper`](https://github.com/gufranco/snes-mapper-python) | Decides where a header is, out of the places one can be |
 
-Both are carried as submodules. `snes-mapper` arrives nested inside `snes-rom-image`, which is why the clone above is recursive.
+Both are carried as submodules, each at the root of the repository that pulls it in and named after itself, so what this is built on is visible the moment either repository is opened. `snes-mapper-python` arrives nested inside `snes-rom-image-python`, which is why the clone above is recursive.
 
 ## Using it as a library
 

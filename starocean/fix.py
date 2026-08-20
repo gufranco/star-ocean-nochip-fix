@@ -25,8 +25,8 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 
 sys.path.insert(0, str(ROOT))
-sys.path.insert(0, str(ROOT / "packages" / "snes-rom-image"))
-sys.path.insert(0, str(ROOT / "packages" / "snes-rom-image" / "packages" / "snes-mapper"))
+sys.path.insert(0, str(ROOT / "snes-rom-image-python"))
+sys.path.insert(0, str(ROOT / "snes-rom-image-python" / "snes-mapper-python"))
 
 from romimage import rewrite
 from romimage.rewrite import NoHeader
