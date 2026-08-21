@@ -28,8 +28,11 @@
 ```bash
 star-ocean-verify           # reads only: says what is here and whether it is right
 star-ocean-fix              # confirms, corrects, confirms again, writes
+
 #   japanese: -> dist/star-ocean-jp-nochip.sfc (37131fc1…)
+
 #   english:  -> dist/star-ocean-en-nochip.sfc (32bab94e…)
+
 #   2 of 2 corrected
 ```
 
@@ -100,8 +103,11 @@ You supply the files. Put whatever you have in [`roms/`](roms/) under the filena
 
 ```bash
 python3 starocean/verify.py roms dist
+
 #   japanese: source matches, Star Ocean (Japan).sfc
+
 #   japanese: patch absent, 96Mbit_SO_JPN.xdelta
+
 #   ...
 ```
 

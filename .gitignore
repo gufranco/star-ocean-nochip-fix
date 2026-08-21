@@ -13,3 +13,4 @@ dist/
 *.sfc
 *.smc
 .mypy_cache/
+docs/
