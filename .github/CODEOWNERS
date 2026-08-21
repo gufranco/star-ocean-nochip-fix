@@ -1,0 +1,14 @@
+# Every path, one owner. The repository has a single maintainer, so this file
+# exists to make review required rather than to route it: without an owner,
+# GitHub's branch protection has nobody to ask.
+*       @gufranco
+
+# What decides whether a file is the one named, at both ends of the correction.
+# A wrong entry here means the wrong file is rewritten, or a correct result is
+# refused.
+/roms.manifest.json             @gufranco
+
+# The two files that record what this package claims and what it leaves to its
+# siblings.
+/conformance/hardware.json      @gufranco
+/conformance/divergences.json   @gufranco

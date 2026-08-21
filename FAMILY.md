@@ -96,13 +96,31 @@ Report per part, never one number over parts with different evidence. One part
 held to its manufacturer's manual and another held to nothing are not one figure.
 
 ## The state of this repository
+## The state of this repository
 
-**No `specs/current/`.** Every sibling carries requirements with Given/When/Then
-scenarios. This one does not.
+**This package pins almost nothing, and that is the design.** What a header means
+is pinned in `snes-rom-image-python` against Nintendo's development manual; where
+it sits is pinned in `snes-mapper-python`. Copying either here would make a
+second source of truth that drifts away from the one held to the manual.
 
-**No `AGENTS.md`, no `CLAUDE.md`, no weekly or analysis workflow.** The sibling
-projects run a weekly job that re-validates against the newest published data and
-proposes a bump, and an analysis job. This one has neither.
+[`conformance/hardware.json`](conformance/hardware.json) holds two facts. The
+image length, which every edition in the manifest is checked against. And the
+size byte that follows from it, which is 0x0E by Nintendo's rule rather than from
+Nintendo's table: that table stops at 32 megabit and these images are 96, so a
+reader checking the rows will not find this value in them. Named in
+[`conformance/divergences.json`](conformance/divergences.json) for that reason.
 
-Type checking is done: mypy is clean at strict with every optional error class,
-and CI runs it.
+**The input is a hack, and here that is allowed.** The family's rule is that a
+hack is never evidence about hardware. It is not being used as evidence: it is
+the subject. This corrects what somebody else's decompression left inconsistent,
+and nothing about the patch is treated as telling anybody what a cartridge does.
+
+**The checking at both ends is the whole design.** An image is confirmed against
+four digests before anything touches it, so a file that is not the one named
+never reaches the rewrite. The result is confirmed against four more before it is
+written, so a rewrite that produced something unforeseen ends as a refusal rather
+than as a file nobody can identify. Weakening either end makes this unsafe to run
+unattended, which is the only reason it exists in this shape.
+
+**Nothing here models hardware.** It reads a file, rewrites thirty two bytes of it
+in every mirror, and writes it back.
