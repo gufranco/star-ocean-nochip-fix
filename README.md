@@ -23,7 +23,7 @@
   <a href="https://github.com/gufranco/star-ocean-nochip-fix/issues">Issues</a>
 </p>
 
-**2** editions · **12** bytes changed per image and none elsewhere · **32** pinned digests across the two chains, **0** disagreements · **432** tests · **100%** statement and branch coverage · no dependencies
+**2** editions · **12** bytes changed per image and none elsewhere · **32** pinned digests across the two chains, **0** disagreements · **433** tests · **100%** statement and branch coverage · no dependencies
 
 ```bash
 python3 starocean/verify.py   # reads only: says what is here and whether it is right
