@@ -6,7 +6,11 @@
       "the image itself, confirmed by digest at both ends of the correction",
       "nothing else"
     ],
-    "why": "The correction is small and somebody else's packages do all of it. What is left here is checking at both ends, which is what makes it safe to run unattended: an image is confirmed against four digests before anything touches it, and the result is confirmed against four more before it is written."
+    "why": "The correction is small and somebody else's packages do all of it. What is left here is checking at both ends, which is what makes it safe to run unattended: an image is confirmed against four digests before anything touches it, and the result is confirmed against four more before it is written.",
+    "comparedAgainst": {
+      "runner": "conformance/against_images.test.py",
+      "what": "Real images at every link of both chains, each confirmed against four digests before and after the correction."
+    }
   },
   "documents": {
     "developmentManual": {
