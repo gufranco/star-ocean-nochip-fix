@@ -8,6 +8,20 @@
     ],
     "why": "The correction is small and somebody else's packages do all of it. What is left here is checking at both ends, which is what makes it safe to run unattended: an image is confirmed against four digests before anything touches it, and the result is confirmed against four more before it is written."
   },
+  "documents": {
+    "developmentManual": {
+      "publisher": "Nintendo of America Inc.",
+      "title": "SNES Development Manual, Book 1",
+      "readOn": "2026-08-21",
+      "retrievedFrom": "archive.org/details/SNESDevManual, book1_text.pdf",
+      "sha256": "f1405241000046abba7849376d2ec53cf85f1ad2e9950d69a7c2cf1f3ff6b791",
+      "bytes": 21022582,
+      "file": "book1_text.pdf",
+      "through": "snes-rom-image-python",
+      "note": "Not read here. The size byte this correction writes follows a rule the manual implies rather than a row it prints, and snes-rom-image-python is where that rule is derived, pinned and checked against retail cartridges. Naming the sibling keeps the reading in one place; repeating the digest lets a reader confirm they hold the same scan without opening the other repository."
+    }
+  },
+  "documentsNote": "One entry, reached through a sibling. This repository reads no document of its own: it corrects twelve bytes per image and every claim about what those bytes mean belongs to a member below it.",
   "facts": {
     "imageBytes": {
       "value": 12582912,
@@ -23,7 +37,8 @@
       "verified": true,
       "why": "What the header must declare for an image of that length.",
       "evidence": "Nintendo's rule, pinned in snes-rom-image-python: the size byte is the base two logarithm of the length in kilobytes, rounded up. 12288 KB gives 14.",
-      "note": "Nintendo's table stops at 32 megabit, so this figure comes from the rule rather than from a printed row. The rule reproduces every row the manual does print, and a table of five rows cannot be the whole answer because cartridges below its smallest row exist and carry a size byte."
+      "note": "Nintendo's table stops at 32 megabit, so this figure comes from the rule rather than from a printed row. The rule reproduces every row the manual does print, and a table of five rows cannot be the whole answer because cartridges below its smallest row exist and carry a size byte.",
+      "document": "developmentManual"
     }
   },
   "notStated": [

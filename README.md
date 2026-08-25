@@ -23,7 +23,7 @@
   <a href="https://github.com/gufranco/star-ocean-nochip-fix/issues">Issues</a>
 </p>
 
-**2** editions · **12** bytes changed per image and none elsewhere · **32** pinned digests across the two chains, **0** disagreements · **306** tests · **100%** statement and branch coverage · no dependencies
+**2** editions · **12** bytes changed per image and none elsewhere · **32** pinned digests across the two chains, **0** disagreements · **371** tests · **100%** statement and branch coverage · no dependencies
 
 ```bash
 star-ocean-verify           # reads only: says what is here and whether it is right
@@ -339,6 +339,8 @@ python3 -m conformance.speed
 | Images | [`conformance/against_images.test.py`](conformance/against_images.test.py) | The real files: every pinned digest, and that only header mirrors move |
 
 The last one is skipped rather than passed when neither image is present, so a run that proved nothing never reads as a run that proved something. CI attempts it on every push and annotates the skip, and it runs the correction twice and compares what came out, because a correction that is not idempotent is one nobody can safely re-run and both runs write a file of the right length.
+
+`python3 starocean/doctor.py` says what is actually on this machine: both editions, every link of both chains looked for on disk, and whether the submodule this repository needs is checked out. It is run as a file rather than with `-m` so that it still runs when the package itself will not import, which is the case it exists for. Its report is what an issue asks for, because a report is only as good as what it says about the machine that produced it.
 
 A weekly job checks whether the vendored packages have moved and opens an issue if so. Taking them stays a deliberate act: a header reader that changes what it reads changes what every pinned digest means.
 
