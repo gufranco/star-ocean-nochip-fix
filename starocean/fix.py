@@ -33,8 +33,7 @@ from romimage import rewrite
 from romimage.rewrite import NoHeader
 
 from starocean import editions
-
-from .errors import Corrupt, Missing, NotACartridge, Unexpected, Unrecognised
+from starocean.errors import Corrupt, Missing, NotACartridge, Unexpected, Unrecognised
 
 DIRECTORY_VARIABLE = "STAR_OCEAN_ROM_DIR"
 
