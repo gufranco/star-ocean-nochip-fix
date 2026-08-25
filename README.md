@@ -63,7 +63,7 @@ You supply the files. Put whatever you have in [`roms/`](roms/) under the
 filenames in [`roms/README.md`](roms/README.md), then ask what is there:
 
 ```bash
-python3 -m starocean.verify roms dist
+python3 starocean/verify.py roms dist
 ```
 
 ```
@@ -75,7 +75,7 @@ python3 -m starocean.verify roms dist
 That reads and writes nothing. When the image the correction consumes is present:
 
 ```bash
-python3 -m starocean.fix roms dist
+python3 starocean/fix.py roms dist
 ```
 
 Installed, those are `star-ocean-verify` and `star-ocean-fix`.
