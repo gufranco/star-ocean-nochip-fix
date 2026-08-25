@@ -14,10 +14,10 @@
         "sha256": "e5ba9bef71c8ea31ce9650b90a60245c3434ff679475f847903011bf69e6d338"
       },
       "after": {
-        "crc32": "4cde067c",
-        "md5": "f4cf8181ecfcf553be8f6fcbac3d47cc",
-        "sha1": "1227eeb4339fc191c08caab33b9746df36425b85",
-        "sha256": "37131fc112149dc7946c229ade1e226aebc4e2749edf7cf9470bff6952760924"
+        "crc32": "e2f62c1e",
+        "md5": "075d99d327b4038f22263049fb160c64",
+        "sha1": "857453805be297f1d0f75b5e8a0af603bc507cbb",
+        "sha256": "4656c58a296b8901f29456e2920ab85778f84f923c52fda94fa77387695f2516"
       },
       "source": {
         "name": "Star Ocean (Japan).sfc",
@@ -36,6 +36,15 @@
         "md5": "d3a781639a0d4a5f05c8602be2c449f0",
         "sha1": "6996194ef50db0a3aa214582bc56b6df33562912",
         "sha256": "8c3869301f396f4403b51493cceda4c3b2d8da2e4eba8e91e2c58618e0f77099"
+      },
+      "supersedes": {
+        "after": {
+          "crc32": "4cde067c",
+          "md5": "f4cf8181ecfcf553be8f6fcbac3d47cc",
+          "sha1": "1227eeb4339fc191c08caab33b9746df36425b85",
+          "sha256": "37131fc112149dc7946c229ade1e226aebc4e2749edf7cf9470bff6952760924"
+        },
+        "why": "What this correction writes changed on 2026-08-25, because the checksum it writes was wrong for an image whose length is not a power of two, and both of these are twelve megabytes. snes-rom-image-python fixed the rule in d9ccd39: the development manual says the remainder is added repeatedly until the total reaches a power of two, and following it took agreement with real cartridges from 2,150 of 2,780 retail images to 2,768. The digests above are what this tool produced while carrying the old rule. An image matching them carries a checksum no cartridge would."
       }
     },
     {
@@ -51,10 +60,10 @@
         "sha256": "1bcb3b8b58f19a91540aeb5ca975fe2386ca0b55a5ff924be6a3514010b2e5c3"
       },
       "after": {
-        "crc32": "6db1c7d3",
-        "md5": "40336902d0b865eecf0ffe1235c11333",
-        "sha1": "77107cba44e45928cf2fa1ed67390ed1f86649e0",
-        "sha256": "32bab94ed1abc94a3b0bc0e1315c88a759da82b995e4ab0f0d2970afe94a4ee5"
+        "crc32": "4f487385",
+        "md5": "94103789fb45494fe8df9591e11c17d0",
+        "sha1": "d9f47ca39553f28c8e1ffac0924898616459e090",
+        "sha256": "3f0af092ae356444b1348526916d90ac5cd53af9a47c2e6b1d66e1dec3045a89"
       },
       "source": {
         "name": "Star Ocean (J) T+Eng v1.0 DeJap.sfc",
@@ -73,6 +82,15 @@
         "md5": "dd9136abfbe02bf430960d67eb3d2e56",
         "sha1": "95ec51cb2aba2f59d064241fd3041348e7f21050",
         "sha256": "83b209ef73241fa37f6d355da3786ea2617b97a171ae98d535ec5ecaeb65d66e"
+      },
+      "supersedes": {
+        "after": {
+          "crc32": "6db1c7d3",
+          "md5": "40336902d0b865eecf0ffe1235c11333",
+          "sha1": "77107cba44e45928cf2fa1ed67390ed1f86649e0",
+          "sha256": "32bab94ed1abc94a3b0bc0e1315c88a759da82b995e4ab0f0d2970afe94a4ee5"
+        },
+        "why": "What this correction writes changed on 2026-08-25, because the checksum it writes was wrong for an image whose length is not a power of two, and both of these are twelve megabytes. snes-rom-image-python fixed the rule in d9ccd39: the development manual says the remainder is added repeatedly until the total reaches a power of two, and following it took agreement with real cartridges from 2,150 of 2,780 retail images to 2,768. The digests above are what this tool produced while carrying the old rule. An image matching them carries a checksum no cartridge would."
       }
     }
   ],

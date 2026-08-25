@@ -40,6 +40,24 @@ a run that reports nothing needed doing.
 | sha1 | `ba3681fad685a278ffe5858b4f8e5cbfe4fb016f` |
 | sha256 | `f820128d161f5e3fea8a839100b08c63fd435f433e28269ff95e63907a18b2c0` |
 
+## What this writes changed on 2026-08-25
+
+The digests below for the corrected images are not the ones this tool produced
+before that date. The checksum it writes was wrong for an image whose length is
+not a power of two, and both of these are twelve megabytes.
+
+`snes-rom-image-python` fixed the rule: the development manual says the
+remainder is added repeatedly until the total reaches a power of two, and a
+remainder that is not itself a power of two folds the same way first. Following
+it took agreement with real cartridges from 2,150 of 2,780 retail images to
+2,768. Both corrected images now carry a checksum that matches what the rule
+computes over them, and a complement that sums with it to FFFF.
+
+If you hold an image matching the previous digests, it carries a checksum no
+cartridge would. Run the correction again. The manifest records the superseded
+digests beside the reason, so a file that matches them can still be recognised
+rather than merely failing to match.
+
 ## Per edition
 
 ### japanese
@@ -85,10 +103,10 @@ neviksti's patch on the Japanese original, decompressed to ninety six megabit.
 |-------|-------|
 | File | `star-ocean-jp-nochip.sfc` |
 | Bytes | 12582912 |
-| crc32 | `4cde067c` |
-| md5 | `f4cf8181ecfcf553be8f6fcbac3d47cc` |
-| sha1 | `1227eeb4339fc191c08caab33b9746df36425b85` |
-| sha256 | `37131fc112149dc7946c229ade1e226aebc4e2749edf7cf9470bff6952760924` |
+| crc32 | `e2f62c1e` |
+| md5 | `075d99d327b4038f22263049fb160c64` |
+| sha1 | `857453805be297f1d0f75b5e8a0af603bc507cbb` |
+| sha256 | `4656c58a296b8901f29456e2920ab85778f84f923c52fda94fa77387695f2516` |
 
 ### english
 
@@ -133,10 +151,10 @@ The same patch on the DeJap English translation. The two are not interchangeable
 |-------|-------|
 | File | `star-ocean-en-nochip.sfc` |
 | Bytes | 12582912 |
-| crc32 | `6db1c7d3` |
-| md5 | `40336902d0b865eecf0ffe1235c11333` |
-| sha1 | `77107cba44e45928cf2fa1ed67390ed1f86649e0` |
-| sha256 | `32bab94ed1abc94a3b0bc0e1315c88a759da82b995e4ab0f0d2970afe94a4ee5` |
+| crc32 | `4f487385` |
+| md5 | `94103789fb45494fe8df9591e11c17d0` |
+| sha1 | `d9f47ca39553f28c8e1ffac0924898616459e090` |
+| sha256 | `3f0af092ae356444b1348526916d90ac5cd53af9a47c2e6b1d66e1dec3045a89` |
 
 ## What is checked
 
