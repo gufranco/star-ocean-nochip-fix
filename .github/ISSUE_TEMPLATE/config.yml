@@ -1,0 +1,11 @@
+blank_issues_enabled: false
+contact_links:
+  - name: What this correction does and does not touch
+    url: https://github.com/gufranco/star-ocean-nochip-fix/blob/main/OPEN-QUESTIONS.md
+    about: Twelve bytes per image, and every boundary written down rather than implied.
+  - name: What a header means and how its checksum is calculated
+    url: https://github.com/gufranco/snes-rom-image-python
+    about: That job belongs to the image package, which this one calls.
+  - name: Where a header sits in a cartridge
+    url: https://github.com/gufranco/snes-mapper-python
+    about: The memory map is a member of its own, below the image package.

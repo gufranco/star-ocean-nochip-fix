@@ -23,11 +23,11 @@
   <a href="https://github.com/gufranco/star-ocean-nochip-fix/issues">Issues</a>
 </p>
 
-**2** editions · **12** bytes changed per image and none elsewhere · **32** pinned digests across the two chains, **0** disagreements · **371** tests · **100%** statement and branch coverage · no dependencies
+**2** editions · **12** bytes changed per image and none elsewhere · **32** pinned digests across the two chains, **0** disagreements · **394** tests · **100%** statement and branch coverage · no dependencies
 
 ```bash
-star-ocean-verify           # reads only: says what is here and whether it is right
-star-ocean-fix              # confirms, corrects, confirms again, writes
+python3 starocean/verify.py   # reads only: says what is here and whether it is right
+python3 starocean/fix.py      # confirms, corrects, confirms again, writes
 
 #   japanese: -> dist/star-ocean-jp-nochip.sfc (4656c58a…)
 
@@ -78,7 +78,10 @@ That reads and writes nothing. When the image the correction consumes is present
 python3 starocean/fix.py roms dist
 ```
 
-Installed, those are `star-ocean-verify` and `star-ocean-fix`.
+Both are run as files rather than as installed commands. This repository ships
+no packaging block, because it consumes `snes-rom-image` as a submodule rather
+than as a version range: a wheel built from here would install cleanly and then
+raise on its first import, since the submodule is not in it and cannot be.
 
 Point `STAR_OCEAN_ROM_DIR` at a library somewhere else to read from there
 instead. A named directory wins even when it turns out to be empty, because
@@ -242,7 +245,7 @@ graph LR
     B -->|this repository| C[corrected image]
 ```
 
-`star-ocean-verify` looks for all four links, reports each as absent, matching, altered or corrupt, and writes nothing. A report naming which link is wrong points at the step to redo.
+`verify.py` looks for all four links, reports each as absent, matching, altered or corrupt, and writes nothing. A report naming which link is wrong points at the step to redo.
 
 Every filename and every digest lives in [`roms.manifest.json`](roms.manifest.json) and is printed in [`roms/README.md`](roms/README.md). The table is data rather than code: filenames and digests are the two things most likely to need a correction of their own, and a table nobody has to read Python to check is easier to correct.
 

@@ -54,29 +54,42 @@ class ExportTest(unittest.TestCase):
             self.assertFalse(name.startswith("_"), name)
 
 
-class ConsoleTest(unittest.TestCase):
+class PackagingTest(unittest.TestCase):
+    """That this repository ships no packaging block, which is deliberate.
+
+    It consumes `snes-rom-image` as a submodule rather than as a version range.
+    A wheel built from here installs cleanly and then raises on its first import,
+    because the submodule is not in it and cannot be, so a `[project]` block
+    would let somebody `pip install git+...` and receive exactly that. The readme
+    says the same thing in prose, and the two commands are run as files.
+    """
+
     @override
     def setUp(self) -> None:
         with (ROOT / "pyproject.toml").open("rb") as handle:
             self.held = tomllib.load(handle)
 
-    def test_the_package_declares_the_commands_it_installs(self) -> None:
-        self.assertTrue(self.held["project"]["scripts"])
+    def test_the_manifest_declares_no_package(self) -> None:
+        self.assertNotIn("project", self.held)
 
-    def test_every_command_points_at_something_importable(self) -> None:
-        for command, target in self.held["project"]["scripts"].items():
-            module, _, attribute = target.partition(":")
-            imported = __import__(module, fromlist=[attribute])
+    def test_nor_a_way_to_build_one(self) -> None:
+        self.assertNotIn("build-system", self.held)
 
-            self.assertTrue(callable(getattr(imported, attribute)), command)
+    def test_it_still_configures_every_checker(self) -> None:
+        self.assertTrue(self.held["tool"]["ruff"])
+        self.assertTrue(self.held["tool"]["mypy"])
+        self.assertTrue(self.held["tool"]["coverage"])
 
-    def test_a_command_exists_for_correcting_and_one_for_checking(self) -> None:
-        named = set(self.held["project"]["scripts"])
+    def test_the_readme_says_what_is_run_instead(self) -> None:
+        held = (ROOT / "README.md").read_text()
 
-        self.assertEqual(named, {"star-ocean-fix", "star-ocean-verify"})
+        self.assertIn("python3 starocean/verify.py", held)
+        self.assertIn("python3 starocean/fix.py", held)
 
-    def test_the_packaged_name_matches_the_directory_it_ships(self) -> None:
-        self.assertIn(starocean.__name__, self.held["tool"]["setuptools"]["packages"])
+    def test_and_says_why_there_is_nothing_to_install(self) -> None:
+        held = (ROOT / "README.md").read_text()
+
+        self.assertIn("ships\nno packaging block", held)
 
 
 if __name__ == "__main__":
