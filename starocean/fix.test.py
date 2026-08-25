@@ -10,6 +10,7 @@ from typing import Any, override
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from starocean import editions, fix
+from starocean.errors import Corrupt, Missing, NotACartridge, Unexpected, Unrecognised
 
 
 def an_image(
@@ -102,7 +103,7 @@ class CorrectTest(unittest.TestCase):
         self.assertEqual(fix.correct(once), once)
 
     def test_an_image_with_no_header_is_refused(self) -> None:
-        with self.assertRaises(fix.NotACartridge):
+        with self.assertRaises(NotACartridge):
             fix.correct(bytes(0x100000))
 
 
@@ -117,7 +118,7 @@ class ConfirmTest(unittest.TestCase):
         before = an_image()
         edition = an_edition(before, fix.correct(before), size=0x200000)
 
-        with self.assertRaises(fix.Unrecognised) as raised:
+        with self.assertRaises(Unrecognised) as raised:
             fix.confirm(before, edition)
 
         self.assertIn("bytes", str(raised.exception))
@@ -126,7 +127,7 @@ class ConfirmTest(unittest.TestCase):
         before = an_image()
         edition = an_edition(an_image(declared=0x0B), fix.correct(before))
 
-        with self.assertRaises(fix.Unrecognised) as raised:
+        with self.assertRaises(Unrecognised) as raised:
             fix.confirm(before, edition)
 
         self.assertIn("sha256", str(raised.exception))
@@ -136,7 +137,7 @@ class ConfirmTest(unittest.TestCase):
         edition = an_edition(before, fix.correct(before))
         edition.before = dict(edition.before, crc32="00000000")
 
-        with self.assertRaises(fix.Corrupt) as raised:
+        with self.assertRaises(Corrupt) as raised:
             fix.confirm(before, edition)
 
         self.assertIn("crc32", str(raised.exception))
@@ -147,7 +148,7 @@ class ConfirmTest(unittest.TestCase):
             edition = an_edition(before, fix.correct(before))
             edition.before = dict(edition.before, **{name: wrong})
 
-            with self.assertRaises(fix.Corrupt):
+            with self.assertRaises(Corrupt):
                 fix.confirm(before, edition)
 
 
@@ -164,7 +165,7 @@ class ApplyTest(unittest.TestCase):
     def test_a_result_the_manifest_did_not_predict_is_refused(self) -> None:
         wrong = an_edition(self.before, an_image(declared=0x0C))
 
-        with self.assertRaises(fix.Unexpected) as raised:
+        with self.assertRaises(Unexpected) as raised:
             fix.apply(self.before, wrong)
 
         self.assertIn("sha256", str(raised.exception))
@@ -172,7 +173,7 @@ class ApplyTest(unittest.TestCase):
     def test_the_refusal_names_what_was_produced_so_it_can_be_looked_up(self) -> None:
         wrong = an_edition(self.before, an_image(declared=0x0C))
 
-        with self.assertRaises(fix.Unexpected) as raised:
+        with self.assertRaises(Unexpected) as raised:
             fix.apply(self.before, wrong)
 
         self.assertIn(fix.digests_of(self.after)["sha256"], str(raised.exception))
@@ -180,7 +181,7 @@ class ApplyTest(unittest.TestCase):
     def test_an_image_that_is_not_the_one_named_never_reaches_the_correction(self) -> None:
         other = an_edition(an_image(declared=0x0B), self.after)
 
-        with self.assertRaises(fix.Unrecognised):
+        with self.assertRaises(Unrecognised):
             fix.apply(self.before, other)
 
 
@@ -203,7 +204,7 @@ class OnDiskTest(unittest.TestCase):
         self.assertEqual(written.name, self.edition.writes)
 
     def test_a_source_that_is_not_there_is_refused(self) -> None:
-        with self.assertRaises(fix.Missing) as raised:
+        with self.assertRaises(Missing) as raised:
             fix.run(self.edition, Path("/nowhere/at/all"), self.where)
 
         self.assertIn(self.edition.reads, str(raised.exception))

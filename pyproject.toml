@@ -71,6 +71,10 @@ ignore = [
 # timestamp in front of a report meant to be read by a person.
 "starocean/fix.py" = ["T201", "E402"]
 "starocean/verify.py" = ["T201", "E402"]
+# The link survey and the throughput floor are the same: each prints a report a
+# workflow reads, and its own exit code is the verdict.
+"conformance/links.py" = ["T201"]
+"conformance/speed.py" = ["T201"]
 # The two packages this is built on are submodules rather than installed
 # distributions, so their paths go on sys.path before they can be imported.
 # Nothing else in the file runs before those imports.

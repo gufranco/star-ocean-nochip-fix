@@ -25,6 +25,8 @@ from collections.abc import Mapping, Sequence
 from pathlib import Path
 from typing import Any, override
 
+from .errors import UnknownEdition
+
 ROOT = Path(__file__).resolve().parent.parent
 
 MANIFEST = ROOT / "roms.manifest.json"
@@ -43,12 +45,10 @@ only sits inside the file at 192 banks.
 """
 
 
-class UnknownEdition(Exception):
-    pass
-
-
 class Patch:
     """The hack the two images are built with, and where to find it."""
+
+    __slots__ = ("archive", "author", "name", "note", "version", "where")
 
     def __init__(
         self,
@@ -74,6 +74,8 @@ class Patch:
 class Step:
     """One file in the chain, and whether this repository is what makes it."""
 
+    __slots__ = ("held", "name", "produced", "what")
+
     def __init__(
         self, what: str, name: str, held: Mapping[str, Any], produced: bool = False
     ) -> None:
@@ -98,6 +100,8 @@ class Step:
 
 class Edition:
     """One rebuild: what it is, what it is read from, and what it becomes."""
+
+    __slots__ = ("after", "before", "name", "patch", "reads", "size", "source", "summary", "writes")
 
     def __init__(
         self,

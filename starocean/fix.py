@@ -34,6 +34,8 @@ from romimage.rewrite import NoHeader
 
 from starocean import editions
 
+from .errors import Corrupt, Missing, NotACartridge, Unexpected, Unrecognised
+
 DIRECTORY_VARIABLE = "STAR_OCEAN_ROM_DIR"
 
 DEFAULT_SOURCE = ROOT / "roms"
@@ -47,26 +49,6 @@ to be told about the other for the same files to be found.
 """
 
 DEFAULT_DESTINATION = ROOT / "dist"
-
-
-class NotACartridge(Exception):
-    pass
-
-
-class Unrecognised(Exception):
-    pass
-
-
-class Corrupt(Exception):
-    pass
-
-
-class Unexpected(Exception):
-    pass
-
-
-class Missing(Exception):
-    pass
 
 
 def source_directories(environment: Mapping[str, str] | None = None) -> tuple[Path, ...]:

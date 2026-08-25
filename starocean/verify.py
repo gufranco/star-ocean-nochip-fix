@@ -48,6 +48,8 @@ SHOWN = 16
 class Finding:
     """One step of one edition, and what was found where it belongs."""
 
+    __slots__ = ("edition", "found", "path", "state", "step")
+
     def __init__(
         self,
         edition: editions.Edition,

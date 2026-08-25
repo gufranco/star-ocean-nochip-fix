@@ -17,6 +17,10 @@ Two entry points, and the difference between them is whether anything is written
     from starocean import apply, run        # confirm, correct, confirm, write
 """
 
+from . import editions as editions
+from . import errors as errors
+from . import fix as fix
+from . import verify as verify
 from .editions import (
     DECIDES,
     DIGEST_WIDTHS,
@@ -27,18 +31,20 @@ from .editions import (
     Edition,
     Patch,
     Step,
-    UnknownEdition,
     load,
     load_patch,
     matching,
     named,
 )
-from .fix import (
+from .errors import (
     Corrupt,
     Missing,
     NotACartridge,
     Unexpected,
+    UnknownEdition,
     Unrecognised,
+)
+from .fix import (
     apply,
     confirm,
     correct,

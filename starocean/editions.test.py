@@ -5,6 +5,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from starocean import editions
+from starocean.errors import UnknownEdition
 
 
 class CatalogueTest(unittest.TestCase):
@@ -187,11 +188,11 @@ class LookupTest(unittest.TestCase):
         self.assertIs(editions.named(wanted.name), wanted)
 
     def test_a_name_no_edition_carries_is_refused(self) -> None:
-        with self.assertRaises(editions.UnknownEdition):
+        with self.assertRaises(UnknownEdition):
             editions.named("nonsense")
 
     def test_the_refusal_lists_the_editions_there_are(self) -> None:
-        with self.assertRaises(editions.UnknownEdition) as raised:
+        with self.assertRaises(UnknownEdition) as raised:
             editions.named("nonsense")
 
         for edition in editions.EDITIONS:
