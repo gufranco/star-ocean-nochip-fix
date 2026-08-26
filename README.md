@@ -1,29 +1,10 @@
-<div align="center">
+# Star Ocean, no chip: the header fix
 
-<h1>Star Ocean, no chip: the header fix</h1>
-
-<strong>neviksti took the S-DD1 out of Star Ocean. The header never noticed.</strong>
-
-<br>
-<br>
+neviksti took the S-DD1 out of Star Ocean. The header never noticed.
 
 [![CI](https://github.com/gufranco/star-ocean-nochip-fix/actions/workflows/ci.yml/badge.svg)](https://github.com/gufranco/star-ocean-nochip-fix/actions/workflows/ci.yml)
-[![Editions](https://img.shields.io/badge/editions-2%20%2F%202-brightgreen)](#the-two-editions)
-[![Coverage](https://img.shields.io/badge/coverage-100%25%20statement%20%2B%20branch-brightgreen)](#tests)
-[![License](https://img.shields.io/badge/license-MIT-blue)](LICENSE)
 
-</div>
-
-<p align="center">
-  <a href="#credit-where-it-belongs">Credit</a> &nbsp;|&nbsp;
-  <a href="#install">Install</a> &nbsp;|&nbsp;
-  <a href="#the-interface">The interface</a> &nbsp;|&nbsp;
-  <a href="#what-is-wrong">What is wrong</a> &nbsp;|&nbsp;
-  <a href="#is-it-right">Is it right</a> &nbsp;|&nbsp;
-  <a href="https://github.com/gufranco/star-ocean-nochip-fix/issues">Issues</a>
-</p>
-
-**2** editions · **12** bytes changed per image and none elsewhere · **32** pinned digests across the two chains, **0** disagreements · **433** tests · **100%** statement and branch coverage · no dependencies
+**2** editions, **12** bytes changed per image and none elsewhere, **32** pinned digests across the two chains, **0** disagreements, **433** tests, **100%** statement and branch coverage, no dependencies
 
 ```bash
 python3 starocean/verify.py   # reads only: says what is here and whether it is right
@@ -36,7 +17,6 @@ python3 starocean/fix.py      # confirms, corrects, confirms again, writes
 #   2 of 2 corrected
 ```
 
----
 
 ## Install
 
