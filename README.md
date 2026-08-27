@@ -4,7 +4,7 @@ neviksti took the S-DD1 out of Star Ocean. The header never noticed.
 
 [![CI](https://github.com/gufranco/star-ocean-nochip-fix/actions/workflows/ci.yml/badge.svg)](https://github.com/gufranco/star-ocean-nochip-fix/actions/workflows/ci.yml)
 
-**2** editions, **12** bytes changed per image and none elsewhere, **32** pinned digests across the two chains, **0** disagreements, **434** tests, **100%** statement and branch coverage, no dependencies
+**2** editions, **12** bytes changed per image and none elsewhere, **32** pinned digests across the two chains, **0** disagreements, **466** tests, **100%** statement and branch coverage, no dependencies
 
 ```bash
 python3 starocean/verify.py   # reads only: says what is here and whether it is right
@@ -346,6 +346,13 @@ Both are carried as submodules, each at the root of the repository that pulls it
 - [S-DD1](https://wiki.superfamicom.org/s-dd1), Super Famicom Development Wiki
 - [SNES: Star Ocean English translation/hack](https://github.com/frederic-mahe/Hardware-Target-Game-Database/issues/622), Hardware Target Game Database
 
+
+Fetching it is a command rather than an exercise. [`conformance/documents.json`](conformance/documents.json) carries the full digest, the byte count and a fetchable address, and [`conformance/documents.py`](conformance/documents.py) brings it down into `docs/`, which git ignores, and refuses anything whose digest does not match.
+
+```bash
+python3 -m conformance.documents          # fetch and verify the digest
+python3 -m conformance.documents --check  # verify what is already here
+```
 ## Citing this
 
 [CITATION.cff](CITATION.cff) is kept in step with the released version by the
