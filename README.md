@@ -4,7 +4,7 @@ neviksti took the S-DD1 out of Star Ocean. The header never noticed.
 
 [![CI](https://github.com/gufranco/star-ocean-nochip-fix/actions/workflows/ci.yml/badge.svg)](https://github.com/gufranco/star-ocean-nochip-fix/actions/workflows/ci.yml)
 
-**2** editions, **12** bytes changed per image and none elsewhere, **32** pinned digests across the two chains, **0** disagreements, **471** tests, **100%** statement and branch coverage, no dependencies
+**2** editions, **12** bytes changed per image and none elsewhere, **32** pinned digests across the two chains, **0** disagreements, **479** tests, **100%** statement and branch coverage, no dependencies
 
 ```bash
 python3 starocean/verify.py   # reads only: says what is here and whether it is right
@@ -227,7 +227,7 @@ graph LR
 
 `verify.py` looks for all four links, reports each as absent, matching, altered or corrupt, and writes nothing. A report naming which link is wrong points at the step to redo.
 
-Every filename and every digest lives in [`roms.manifest.json`](roms.manifest.json) and is printed in [`roms/README.md`](roms/README.md). The table is data rather than code: filenames and digests are the two things most likely to need a correction of their own, and a table nobody has to read Python to check is easier to correct.
+Every filename and every digest lives in [`editions.manifest.json`](editions.manifest.json) and is printed in [`roms/README.md`](roms/README.md). The table is data rather than code: filenames and digests are the two things most likely to need a correction of their own, and a table nobody has to read Python to check is easier to correct.
 
 ## Why both ends are pinned
 

@@ -96,7 +96,7 @@ manual took agreement with real cartridges from 2,150 of 2,780 retail images to
 2,768.
 
 The digests this tool produced before that are in
-[`roms.manifest.json`](roms.manifest.json) under `supersedes`, with the upstream
+[`editions.manifest.json`](editions.manifest.json) under `supersedes`, with the upstream
 commit and the reason, rather than deleted. That is what lets a reader holding an
 older output be told it is one revision old instead of being told it is broken.
 
@@ -169,7 +169,7 @@ conformance/
   divergences.json        where a figure comes from a rule rather than a printed row
   links.py                the weekly check that every cited address still answers
   speed.py                the throughput floor
-roms.manifest.json        every filename and four digests per link, and the superseded ones
+editions.manifest.json        every filename and four digests per link, and the superseded ones
 snes-rom-image-python/    the header reader, a submodule, with the memory map nested below it
 ```
 

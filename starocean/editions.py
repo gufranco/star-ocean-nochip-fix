@@ -29,7 +29,7 @@ from .errors import UnknownEdition
 
 ROOT = Path(__file__).resolve().parent.parent
 
-MANIFEST = ROOT / "roms.manifest.json"
+MANIFEST = ROOT / "editions.manifest.json"
 
 DIGESTS = ("crc32", "md5", "sha1", "sha256")
 

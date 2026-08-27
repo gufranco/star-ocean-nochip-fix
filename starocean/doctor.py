@@ -74,7 +74,7 @@ VERSION = _version()
 
 ROOT = Path(__file__).resolve().parent.parent
 
-MANIFEST = ROOT / "roms.manifest.json"
+MANIFEST = ROOT / "editions.manifest.json"
 
 SOURCE = ROOT / "roms"
 

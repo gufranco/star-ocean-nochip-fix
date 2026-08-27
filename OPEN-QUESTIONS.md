@@ -26,7 +26,7 @@ not a power of two, and both of these are twelve megabytes. The member below thi
 one fixed the rule, and following the manual took agreement with real cartridges
 from 2,150 of 2,780 retail images to 2,768. The digests this tool produced before
 that are recorded under `supersedes` in
-[`roms.manifest.json`](roms.manifest.json) with the upstream commit and the
+[`editions.manifest.json`](editions.manifest.json) with the upstream commit and the
 reason, rather than deleted.
 
 A digest updated to make a check pass would have hidden exactly that.

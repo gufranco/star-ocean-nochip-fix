@@ -2,7 +2,7 @@
   "comment": "Where each fact stands, and what this package deliberately does not claim.",
   "sources": {
     "siblings": "snes-rom-image-python and snes-mapper-python, both pinned against Nintendo's development manual.",
-    "images": "The editions named in roms.manifest.json, each with four digests before and four after."
+    "images": "The editions named in editions.manifest.json, each with four digests before and four after."
   },
   "divergences": [
     {
