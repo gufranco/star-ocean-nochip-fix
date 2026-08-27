@@ -40,21 +40,30 @@ at all.
 
 ### The size byte for a ninety six megabit image.
 
-**The document says.** Nintendo tabulates five sizes, the largest of which is 32
+**The document says.** Nintendo tabulates five sizes, the largest of which is 64
 megabit. Ninety six is not among them.
 
-Source: Nintendo, *SNES Development Manual, Book 1*.
+Source: Nintendo, *SNES Development Manual, Book 1*, manual page 1-2-18, read on
+2026-08-27 from a rendered page. The five rows pair a code with a range: `09H` is
+`3 ~ 4M Bit`, `0AH` is `5 ~ 8M Bit`, `0BH` is `9 ~ 16M Bit`, `0CH` is `17 ~ 32M
+Bit`, and `0DH` is `33 ~ 64M Bit`. This entry used to say the largest was 32
+megabit, which was wrong by one row.
 
 **What this project follows.** The rule the table implies, which is the exponent
 of the smallest power of two that holds the image.
 
 **Why.** A five row table cannot be the whole answer, because cartridges below
 its smallest row exist and carry a size byte. The rule reproduces every row the
-manual does print, which is the only evidence that it is the right rule, and it
-is named here rather than presented as though a row had been read.
+manual prints, and now that the codes have been read it reproduces both halves of
+every row rather than only the ranges: the code is the exponent of the size in
+kilobytes, so 4M gives `09H`, 8M gives `0AH`, 16M `0BH`, 32M `0CH` and 64M `0DH`,
+which is all five. Ninety six megabit rounds to the next power of two and gives
+`0EH`, in a row the manual does not print.
 
 **What would settle or reopen it.** A passage in Book I or Book II tabulating
-sizes past 32 megabit.
+sizes past 64 megabit. Book I was searched on 2026-08-27 with the document on the
+machine and its pages rendered; the table ends at `0DH` and nothing beside it
+gives the rule as a formula.
 
 ## Where the question is a scope boundary, not an unknown
 
