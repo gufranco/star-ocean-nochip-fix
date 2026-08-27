@@ -49,8 +49,8 @@ from .fix import (
     confirm,
     correct,
     digests_of,
+    directories,
     run,
-    source_directories,
     source_directory,
 )
 from .verify import (
@@ -99,6 +99,7 @@ __all__ = [
     "confirm",
     "correct",
     "digests_of",
+    "directories",
     "load",
     "load_patch",
     "look",
@@ -106,7 +107,6 @@ __all__ = [
     "named",
     "report",
     "run",
-    "source_directories",
     "source_directory",
     "verdict",
 ]
