@@ -15,13 +15,24 @@ body:
   - type: textarea
     id: doctor
     attributes:
-      label: What the doctor says about this machine
+      label: What the doctor says
       description: |
-        Run this from the repository and paste all of it. It reads lengths,
-        digests and which files are present, and prints no part of any image.
+        Run this from the repository and paste every line, including the ones
+        that did not pass. Those are the ones worth reading, so do not trim it.
+
+        macOS and Linux:
+
+            python3 -m starocean.doctor
+
+        Windows, whichever of these resolves:
+
+            python -m starocean.doctor
+            py -3 -m starocean.doctor
+
+        It reports the machine as well as the package, so most answers are in
+        there already. If it will not run at all, say so here and paste whatever
+        it printed instead.
       render: text
-      placeholder: |
-        python3 starocean/doctor.py
     validations:
       required: true
 

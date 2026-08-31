@@ -74,6 +74,8 @@ VERSION = _version()
 
 ROOT = Path(__file__).resolve().parent.parent
 
+from starocean import environment  # noqa: E402
+
 MANIFEST = ROOT / "editions.manifest.json"
 
 SOURCE = ROOT / "roms"
@@ -295,6 +297,10 @@ def report(found: Sequence[Finding]) -> list[str]:
     """The lines a person pastes into an issue."""
     unwell = [one for one in found if not one.ok]
     lines = [f"starocean {VERSION} on {platform.python_version()}, {platform.system()}", ""]
+    lines.append("  the machine")
+    lines.extend(environment.lines(ROOT))
+    lines.append("")
+    lines.append("  this package")
     lines.extend(one.report for one in found)
     lines.append("")
     if unwell:
