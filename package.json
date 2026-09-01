@@ -1,5 +1,5 @@
 {
-  "name": "star-ocean-nochip-fix-release-tooling",
+  "name": "snes-star-ocean-nochip-fix-release-tooling",
   "version": "0.0.0-managed-by-semantic-release",
   "private": true,
   "description": "Release tooling only. The package itself is pure Python and carries no build artefact.",

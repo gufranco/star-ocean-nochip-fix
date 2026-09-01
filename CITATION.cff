@@ -1,5 +1,5 @@
 cff-version: 1.2.0
-title: star-ocean-nochip-fix
+title: snes-star-ocean-nochip-fix
 message: >-
   If you use this work, or the corrections it produces, please cite it.
 type: software
@@ -7,8 +7,8 @@ authors:
   - given-names: Gustavo
     family-names: Franco
     alias: gufranco
-repository-code: https://github.com/gufranco/star-ocean-nochip-fix
-url: https://github.com/gufranco/star-ocean-nochip-fix
+repository-code: https://github.com/gufranco/snes-star-ocean-nochip-fix
+url: https://github.com/gufranco/snes-star-ocean-nochip-fix
 abstract: >-
   A header correction for two rebuilt Star Ocean images. It rewrites twelve bytes per image so a decompressed cartridge declares the size it actually is and no coprocessor it does not carry, and it refuses anything that is not the image its manifest names. Every link of both chains is pinned by four digests.
 keywords:

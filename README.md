@@ -2,7 +2,7 @@
 
 neviksti took the S-DD1 out of Star Ocean. The header never noticed.
 
-[![CI](https://github.com/gufranco/star-ocean-nochip-fix/actions/workflows/ci.yml/badge.svg)](https://github.com/gufranco/star-ocean-nochip-fix/actions/workflows/ci.yml)
+[![CI](https://github.com/gufranco/snes-star-ocean-nochip-fix/actions/workflows/ci.yml/badge.svg)](https://github.com/gufranco/snes-star-ocean-nochip-fix/actions/workflows/ci.yml)
 
 **2** editions, **12** bytes changed per image and none elsewhere, **32** pinned digests across the two chains, **0** disagreements, **541** tests, **100%** statement and branch coverage, no dependencies
 
@@ -21,8 +21,8 @@ python3 starocean/fix.py      # confirms, corrects, confirms again, writes
 ## Install
 
 ```bash
-git clone --recurse-submodules https://github.com/gufranco/star-ocean-nochip-fix.git
-cd star-ocean-nochip-fix
+git clone --recurse-submodules https://github.com/gufranco/snes-star-ocean-nochip-fix.git
+cd snes-star-ocean-nochip-fix
 ```
 
 Python 3.12 or newer. Nothing else at runtime.
